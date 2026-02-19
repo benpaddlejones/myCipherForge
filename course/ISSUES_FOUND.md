@@ -45,18 +45,6 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
-### M3: Lesson JSON Files Lack Section Titles
-
-**Location:** All lesson JSON files in `course/`
-
-**Issue:** Markdown sections don't have descriptive titles in the JSON structure—titles are only embedded within the markdown content.
-
-**Impact:** Low-Medium - Makes it harder to programmatically navigate or display lesson content.
-
-**Recommendation:** Add `title` fields to markdown sections or document that titles should be extracted from the markdown heading.
-
----
-
 ## Minor Issues
 
 ### m1: requirements.txt Contains Unexplained Packages
