@@ -56,6 +56,7 @@ After following the CipherForge course instructions as a student would, the foll
 **Location:** `.vscode/settings.json`
 
 **Issue:** GitHub Copilot is explicitly disabled for Python, HTML, and CSS files:
+
 ```json
 "github.copilot.enable": {
     "python": false,
@@ -156,6 +157,7 @@ After following the CipherForge course instructions as a student would, the foll
 ## Testing Methodology
 
 This review was conducted by:
+
 1. Reading all lesson JSON files
 2. Following instructions step-by-step as a student would
 3. Implementing all required code
