@@ -108,6 +108,18 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
+### m3: Card Text Not Visible in Web Interface
+
+**Location:** `templates/base.html` and `templates/index.html`
+
+**Issue:** The Bootstrap cards use dark backgrounds but the card title and text classes don't have explicit white text colour set. This results in dark/invisible text on dark cards.
+
+**Impact:** Medium - The homepage cards showing the 5 phases are unreadable.
+
+**Recommendation:** Add explicit `color: #fff` or use Bootstrap's `text-light` classes for card content, or add CSS rules for `.card-title` and `.card-text` to ensure white text.
+
+---
+
 ## Issues Encountered During Implementation
 
 ### I1: Empty String Edge Case in Phase 5
