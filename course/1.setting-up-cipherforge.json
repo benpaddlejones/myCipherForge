@@ -1,0 +1,247 @@
+{
+  "id": "setting-up-cipherforge",
+  "title": "Setting Up Your CipherForge Repository",
+  "description": "Create your GitHub repository, understand open source licensing, and set up your development environment for building a custom encryption algorithm.",
+  "sections": [
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Learning Objectives\n\n- Fork the template repository and rename it correctly\n- Transfer ownership to the TempeHS organization\n- Understand how to read and fill out a README.md template\n- Locate and understand the MIT open source license\n- Set up Copilot instructions for your project\n- Explain what encryption is and why you're building your own\n\n---\n\n## \ud83d\udd25 Welcome to CipherForge!\n\nHave you ever:\n\n- Sent a message on WhatsApp or iMessage?\n- Logged into a website with a password?\n- Bought something online with a credit card?\n\n**Every single one of those used encryption** \u2014 secret codes that scramble your data so only the right person can read it.\n\nIn this course, you won't just *learn about* encryption \u2014 you'll **design and build your own encryption algorithm from scratch**.\n\n> \ud83d\udca1 **What You'll Build**: A 5-layer encryption system with a web interface where you can encrypt messages, decrypt them, and even try to crack your classmates' codes!\n\nBy the end, you'll understand exactly how apps like WhatsApp keep your messages private \u2014 because you'll have built something similar yourself."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## What is Encryption?\n\n**Encryption** turns readable text into scrambled gibberish that only someone with the secret key can unscramble.\n\n| Term | What It Means | Example |\n|------|---------------|----------|\n| **Plaintext** | Your original message | `\"Meet me at 3pm\"` |\n| **Ciphertext** | The scrambled version | `\"Rjjy%rj%fy%8ur\"` |\n| **Key** | The secret that unlocks it | A password like `\"SECRET\"` |\n| **Encrypt** | Scramble the message | `plaintext \u2192 ciphertext` |\n| **Decrypt** | Unscramble it back | `ciphertext \u2192 plaintext` |\n\n### The One Rule of Encryption\n\n**You MUST be able to get the original message back!**\n\nIf you encrypt `\"Hello\"` and can't decrypt it back to `\"Hello\"`, your encryption is broken. This is called **reversibility** \u2014 and you'll test for it constantly in this project."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Encryption Basics",
+      "content": {
+        "question": "You encrypt the message \"Secret\" and get \"Xjhwjy\". Your friend has the correct key. What should happen when they decrypt \"Xjhwjy\"?",
+        "options": [
+          "They get a different secret message",
+          "They get exactly \"Secret\" back \u2014 the original message",
+          "They get \"Xjhwjy\" again",
+          "It depends on what device they use"
+        ],
+        "correct_index": 1,
+        "explanation": "Encryption must be reversible! With the correct key, decryption must return the EXACT original message. If 'Secret' becomes 'Xjhwjy', then decrypting 'Xjhwjy' with the right key MUST give back 'Secret'. This is the golden rule of cryptography."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Why Build Your Own Algorithm?\n\nMost tutorials teach you to **use** existing encryption (like AES). That's like learning to drive by sitting in a self-driving car.\n\nIn CipherForge, you'll **design** the algorithm yourself. You'll:\n\n1. **Think like a cryptographer** \u2014 What makes a code hard to crack?\n2. **Make design decisions** \u2014 Which techniques should you combine?\n3. **Find weaknesses** \u2014 Can your classmates break your code?\n4. **Iterate and improve** \u2014 How can you make it stronger?\n\n### Your 5-Layer Algorithm\n\nYou'll build encryption in **5 phases**, each adding a new layer of protection:\n\n| Phase | Name | What It Does |\n|-------|------|-------------|\n| 1 | **Substitution** | Replace each character with a different one |\n| 2 | **Transposition** | Shuffle the order of characters |\n| 3 | **Key-Dependent** | Make output depend on a secret password |\n| 4 | **Noise Injection** | Add fake characters to confuse attackers |\n| 5 | **Wild Card** | YOUR unique invention! |\n\nReal encryption (like AES used by banks) works exactly this way \u2014 multiple layers combined make it nearly impossible to crack."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Layered Security",
+      "content": {
+        "question": "Why do real encryption systems use multiple layers instead of just one really strong technique?",
+        "options": [
+          "It's faster to process multiple simple layers",
+          "Each layer protects against different types of attacks",
+          "Computers require at least 5 layers to work",
+          "It looks more impressive to hackers"
+        ],
+        "correct_index": 1,
+        "explanation": "Each layer defends against different attacks. Substitution hides what characters are, transposition hides where they are, key-dependence prevents pattern-matching, and noise defeats statistical analysis. An attacker must crack ALL layers \u2014 making the combined system much stronger than any single technique."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Repository Naming Convention\n\nYour school uses a specific naming format for repositories. This helps teachers identify your work and keeps everything organized.\n\n### The Format\n\n```\n{GRAD_YEAR}CT.myCipherForge_{FirstName}.{LastInitial}\n```\n\n### Breaking It Down\n\n| Part | Meaning | Example |\n|------|---------|--------|\n| `{GRAD_YEAR}` | The year you complete Year 10 | `2027` |\n| `CT` | Computing Technology (your subject code) | `CT` |\n| `myCipherForge` | The project name (everyone uses this) | `myCipherForge` |\n| `{FirstName}` | Your first name | `Ben` |\n| `{LastInitial}` | First letter of your last name | `J` |\n\n### Examples\n\n- **Ben Jones** (Year 9 in 2026) \u2192 `2027CT.myCipherForge_Ben.J`\n- **Sarah Smith** (Year 9 in 2026) \u2192 `2027CT.myCipherForge_Sarah.S`\n- **Alex Wong** (Year 9 in 2026) \u2192 `2027CT.myCipherForge_Alex.W`\n\n> \u26a0\ufe0f **Important**: Year 9 students in 2026 graduate Year 10 in 2027. Adjust the year if needed."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Check Your Understanding",
+      "content": {
+        "question": "A Year 9 student named Maya Chen is creating her repository in 2026. What should her repository name be?",
+        "options": [
+          "2027CT.myCipherForge_Maya_C",
+          "2027CT.myCipherForge_Maya.C",
+          "2027CT.myCipherforge_Maya.C",
+          "2026CT.myCipherForge_Maya.C"
+        ],
+        "correct_index": 1,
+        "explanation": "Year 9 students in 2026 graduate in 2027 (Year 9 + 1 year = Year 10 graduation). The correct format is {GRAD_YEAR}CT.myCipherForge_{FirstName}.{LastInitial}, so Maya's repository should be 2027CT.myCipherForge_Maya.C. Note: use a period (.) not underscore before the last initial, and myCipherForge uses lowercase 'm', capital C and F."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## What is a Template Repository?\n\nA **template repository** is a pre-configured starting point that contains files and settings you need. Instead of creating everything from scratch, you **fork** (copy) the template and customize it.\n\n### What's Included in Our Template?\n\nThe template at **[TempeHS/TempeHS_Python-Flask_DevContainer](https://github.com/TempeHS/TempeHS_Python-Flask_DevContainer)** includes:\n\n| File/Folder | Purpose |\n|-------------|----------|\n| `.devcontainer/` | Configuration for GitHub Codespaces \u2014 sets up Python automatically |\n| `.gitignore` | Tells Git which files to ignore (like temporary files) |\n| `.vscode/` | VS Code settings for consistent editor experience |\n| `requirements.txt` | Lists Python packages your project needs |\n| `LICENSE` | The MIT open source license |\n| `README.md` | A template README for you to fill out |\n\n> \ud83d\udca1 **Why use a template?** It saves time and ensures everyone starts with the same professional setup!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step-by-Step: Fork the Template Repository\n\n### Step 1: Open the Template Repository\n\n1. Open your web browser\n2. Go to: **[github.com/TempeHS/TempeHS_Python-Flask_DevContainer](https://github.com/TempeHS/TempeHS_Python-Flask_DevContainer)**\n3. Make sure you're logged into your GitHub account\n\n### Step 2: Fork the Repository\n\n1. Click the **\"Fork\"** button in the top-right corner of the page\n2. A dialog box will appear asking where to create the fork\n\n### Step 3: Configure the Fork\n\nIn the \"Create a new fork\" page:\n\n| Setting | What to Enter |\n|---------|---------------|\n| **Owner** | Select **TempeHS** (not your personal account!) |\n| **Repository name** | Enter your name following the convention: `2027CT.myCipherForge_Ben.J` |\n| **Copy the main branch only** | \u2705 Leave this checked |\n\n> \u26a0\ufe0f **Critical**: Make sure **TempeHS** is selected as the owner, not your personal GitHub account!\n\n### Step 4: Create the Fork\n\nClick the green **\"Create fork\"** button.\n\n\ud83c\udf89 **Congratulations!** You now have your own copy of the template!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 5: Update Repository Settings\n\nNow let's add a description to your repository:\n\n1. In your new repository, click the **\u2699\ufe0f Settings** tab (top menu)\n2. In the **\"About\"** section on the right side of the main page, click the **gear icon** \u2699\ufe0f\n3. In the **Description** field, enter: `\ud83d\udd10 My custom 5-layer encryption algorithm`\n4. Click **\"Save changes\"**\n\n> \ud83d\udca1 **Tip**: You can also add topics like `python`, `flask`, `encryption`, `cryptography` to help others find your project!\n\n### Step 6: Add the Copilot Instructions File\n\nTo help GitHub Copilot understand your encryption project, we'll add a special instructions file:\n\n1. In your new repository, click **\"Add file\"** \u2192 **\"Create new file\"**\n2. In the filename box, type: `.github/copilot-instructions.md`\n   - This creates both the `.github` folder and the file inside it!\n3. Download the instructions file from: **[Copilot Instructions](/static/files/learning/9_cipherforge/copilot-instructions.md)**\n4. Copy the entire contents of that file\n5. Paste it into your new file in GitHub\n6. Scroll down and click **\"Commit new file\"**\n\n> \ud83d\udca1 **What is this file?** The `copilot-instructions.md` file tells GitHub Copilot about encryption patterns, common issues with cipher algorithms, and how to help you write reversible code. This makes Copilot's suggestions much more useful!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Template Repositories",
+      "content": {
+        "question": "Why do we fork a template repository instead of creating an empty repository?",
+        "options": [
+          "Empty repositories don't work with Codespaces",
+          "Templates are faster to download",
+          "Templates include pre-configured files and settings we need",
+          "GitHub requires all students to use templates"
+        ],
+        "correct_index": 2,
+        "explanation": "Template repositories contain pre-configured files like .devcontainer (for Codespaces), .gitignore, requirements.txt, and LICENSE. This saves time and ensures everyone starts with the same professional setup rather than manually creating all these files."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Repository Owner",
+      "content": {
+        "question": "When forking the template, why must you select 'TempeHS' as the owner instead of your personal account?",
+        "options": [
+          "Personal accounts can't fork repositories",
+          "It allows your teacher to access and assess your work under the school organization",
+          "TempeHS accounts have more storage space",
+          "Personal accounts don't support Python"
+        ],
+        "correct_index": 1,
+        "explanation": "Creating the repository under the TempeHS organization allows your teacher to easily find, access, and assess your work. It also keeps all student projects organized in one place. Your personal account would work technically, but it would be harder for your teacher to manage."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Finding and Reading the License\n\nThe template includes a **LICENSE** file containing the **MIT License**. Let's explore what this means.\n\n### Step-by-Step: View the License\n\n1. In your forked repository, find the **LICENSE** file in the file list\n2. Click on **LICENSE** to open and read it\n3. You'll see a short legal document \u2014 much simpler than most licenses!\n\n### What is a Software License?\n\nA software license is a legal document that tells other people:\n\n- Whether they can use your code\n- Whether they can modify your code\n- Whether they can share your code\n- What conditions apply"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Understanding the MIT License\n\nThe MIT License is one of the most **permissive** open source licenses \u2014 it basically says \"do whatever you want, just give me credit.\"\n\n| Feature | What It Means |\n|---------|---------------|\n| \u2705 **Free to use** | Anyone can use your encryption code for anything |\n| \u2705 **Free to modify** | Anyone can change and improve your algorithm |\n| \u2705 **Free to share** | Anyone can distribute copies of your code |\n| \u2705 **Credit required** | They must keep your copyright notice |\n| \ud83d\udee1\ufe0f **No liability** | You're not responsible if someone uses your code and something breaks |\n\n### The Key Difference: MIT vs GPL\n\n| MIT License | GPL License |\n|-------------|-------------|\n| \"Use my code however you want\" | \"Use my code, but share your changes too\" |\n| Can be used in closed-source projects | Changes must stay open source |\n| Simpler and shorter | Longer and more complex |\n\n> \ud83d\udca1 **Why MIT for CipherForge?** It's simple, widely understood, and lets classmates freely learn from and build on your encryption algorithm without restrictions."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Understanding MIT License",
+      "content": {
+        "question": "You release your CipherForge project under the MIT License. A company wants to use your encryption code in their commercial app. What are they required to do?",
+        "options": [
+          "Pay you a licensing fee",
+          "Make their entire app open source",
+          "Include your copyright notice in their project",
+          "Nothing \u2014 they can use it without any requirements"
+        ],
+        "correct_index": 2,
+        "explanation": "The MIT License requires users to include the original copyright notice and license text. They don't need to pay you, make their code open source, or do anything else. It's very permissive \u2014 just credit the original author."
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "License Choice",
+      "content": {
+        "description": "Why do you think the MIT License is a good choice for a student encryption project? Consider: who might want to look at your code, and why would you want to make it easy for them? (2-3 sentences)",
+        "example_answer": "The MIT License is good for student projects because classmates can look at my code to learn how my encryption works, and teachers can easily review and assess my work without legal restrictions. If someone likes my algorithm design and wants to use parts of it in their own project, they can do that freely. It encourages sharing and learning, which is exactly what a school project should do.",
+        "min_words": 20,
+        "max_words": 100
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Understanding the README Template\n\nThe template includes a **README.md** file \u2014 the \"front page\" of your repository. This is the first thing people see when they visit your project.\n\n### Why README Matters for CipherForge\n\nYour README will eventually document:\n\n- What your encryption algorithm does\n- How each of your 5 phases works\n- How to run and test your code\n- Known weaknesses (yes, you'll document these!)\n\nFor now, let's set up the basics.\n\n### The README Framework\n\nHere's the structure you'll build toward:\n\n```markdown\n# \ud83d\udd10 CipherForge \u2014 [Your Algorithm Name]\n\n**A 5-layer encryption algorithm designed and built from scratch.**\n\n## About\nBrief description of what your encryption does.\n\n## Algorithm Phases\n\n1. **Phase 1 \u2014 Substitution**: [Your technique]\n2. **Phase 2 \u2014 Transposition**: [Your technique]\n3. **Phase 3 \u2014 Key-Dependent**: [Your technique]\n4. **Phase 4 \u2014 Noise Injection**: [Your technique]\n5. **Phase 5 \u2014 Wild Card**: [Your unique invention]\n\n## Running the Project\nHow to run and test the encryption.\n\n## Known Weaknesses\nHonest assessment of vulnerabilities.\n\n## Author\nYour name and credits.\n\n## License\nMIT License\n```"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Updating Your README Now\n\nYou'll fill in most of the README as you build each phase. For now, let's update the basics.\n\n### Step-by-Step: Edit README.md\n\n1. In your repository, click on **README.md**\n2. Click the **pencil icon** (\u270f\ufe0f) in the top-right to edit\n3. Replace the default content with:\n\n```markdown\n# \ud83d\udd10 CipherForge\n\n**A custom 5-layer encryption algorithm** built as part of Year 9 Digital Technologies.\n\n## About\n\nThis project implements a multi-layered encryption system that I designed from scratch. Each layer adds a different type of protection, similar to how real encryption algorithms like AES work.\n\n## Algorithm Phases\n\n| Phase | Name | Status |\n|-------|------|--------|\n| 1 | Substitution | \ud83d\udd32 Not started |\n| 2 | Transposition | \ud83d\udd32 Not started |\n| 3 | Key-Dependent | \ud83d\udd32 Not started |\n| 4 | Noise Injection | \ud83d\udd32 Not started |\n| 5 | Wild Card | \ud83d\udd32 Not started |\n\n## Running the Project\n\n```bash\n# Run the Flask app\npython app.py\n\n# Run tests\npython tests.py\n```\n\n## Author\n\n**[Your Name]** \u2014 Year 9, 2026\n\n## License\n\nMIT License \u2014 see [LICENSE](LICENSE) for details.\n```\n\n4. Replace `[Your Name]` with your actual name\n5. Scroll down and click **\"Commit changes\"**\n6. Add commit message: `docs: set up initial README for CipherForge`\n7. Click **\"Commit changes\"** again"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Name Your Algorithm",
+      "content": {
+        "description": "Your encryption algorithm needs a cool name! Think of something that sounds mysterious, powerful, or techy. Write your algorithm name and explain in one sentence why you chose it.",
+        "example_answer": "I'm calling my algorithm 'ShadowCrypt' because encryption hides messages in the shadows where only people with the key can find them. It sounds mysterious and powerful like a real security system.",
+        "min_words": 15,
+        "max_words": 60
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Commit Messages: The TempeHS Style Guide\n\nEvery time you save changes to GitHub, you write a **commit message** describing what you changed.\n\n### The Format\n\n```\ntype: description\n```\n\n### Commit Types\n\n| Type | When to Use | Example |\n|------|-------------|----------|\n| `feature` | Adding new functionality | `feature: add phase 1 substitution cipher` |\n| `fix` | Fixing a bug | `fix: correct decryption reversibility issue` |\n| `docs` | Updating documentation | `docs: update README with phase 2 details` |\n| `test` | Adding or updating tests | `test: add edge case tests for empty strings` |\n| `refactor` | Improving code without changing behavior | `refactor: simplify phase 3 key generation` |\n| `wip` | Work in progress (incomplete) | `wip: starting phase 4 noise injection` |\n\n### Good vs Bad Commit Messages\n\n| \u274c Bad | \u2705 Good |\n|--------|--------|\n| `update` | `docs: add installation instructions` |\n| `fixed stuff` | `fix: handle empty string edge case in phase 1` |\n| `asdfgh` | `feature: implement block reversal for phase 2` |\n| `changes` | `test: add reversibility tests for all phases` |\n\n> \ud83d\udca1 **Tip**: Write commit messages like you're leaving notes for your future self. In 6 months, will you remember what \"fixed stuff\" meant?"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Commit Messages",
+      "content": {
+        "question": "You just finished writing the decryption function for Phase 3. Which commit message follows the TempeHS style guide?",
+        "options": [
+          "done",
+          "feature: add phase 3 decryption function",
+          "Added the decrypt function for phase three",
+          "PHASE 3 COMPLETE!!!"
+        ],
+        "correct_index": 1,
+        "explanation": "The correct format is 'type: description' in lowercase. 'feature: add phase 3 decryption function' follows this pattern \u2014 it uses the 'feature' type (adding new functionality) and clearly describes what was added. The other options are either missing the type, use wrong capitalization, or aren't descriptive."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Real Encryption in Your Daily Life\n\nBefore we start coding, let's see where encryption is already protecting you \u2014 probably without you realizing it.\n\n### Spot the Encryption\n\n| Activity | Encryption Used | What If It Wasn't Encrypted? |\n|----------|-----------------|------------------------------|\n| \ud83d\udd12 Visiting a website with `https://` | TLS/SSL encryption | Hackers could see your passwords as you type them |\n| \ud83d\udcac Sending a WhatsApp message | End-to-end encryption | WhatsApp employees could read your private chats |\n| \ud83d\udcb3 Buying something online | Multiple layers (TLS + payment encryption) | Your credit card number could be stolen mid-transaction |\n| \ud83d\udcf1 Unlocking your phone with a PIN | Device encryption | A thief could read all your photos, messages, and apps |\n| \ud83c\udfae Logging into a game account | Password hashing + TLS | Anyone could steal your account and all your progress |\n\n### The Padlock Icon \ud83d\udd12\n\nLook at your browser's address bar right now. See the padlock? That means:\n\n1. Your connection is encrypted with **TLS** (Transport Layer Security)\n2. No one between you and the website can read the data\n3. The website proved its identity with a certificate\n\nClick the padlock sometime \u2014 you can see the actual encryption details!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Real-World Encryption",
+      "content": {
+        "question": "When you log into Instagram, your password travels over the internet to Instagram's servers. Why doesn't a hacker sitting in the same coffee shop WiFi steal your password?",
+        "options": [
+          "Instagram deletes your password immediately after you type it",
+          "Hackers can only attack from home, not coffee shops",
+          "The password is encrypted before it leaves your device, so hackers only see scrambled data",
+          "Coffee shop WiFi blocks all hackers automatically"
+        ],
+        "correct_index": 2,
+        "explanation": "When you log in over HTTPS (look for the \ud83d\udd12 padlock), your password is encrypted before it leaves your device. A hacker on the same WiFi can see that data is being sent, but it's scrambled \u2014 they just see random gibberish, not your actual password. This is exactly what your CipherForge algorithm will do!"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Encryption in Your Life",
+      "content": {
+        "description": "Think about one app or website you use regularly that handles sensitive information (like banking, messaging, or shopping). What information does it protect? What could happen if that information wasn't encrypted?",
+        "example_answer": "I use my banking app to check my account balance and transfer money. It protects my account number, password, and how much money I have. If this wasn't encrypted, hackers could see my bank details and steal my money by making fake transfers to their own accounts.",
+        "min_words": 30,
+        "max_words": 100
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \u2705 Checklist: Before Moving On\n\nMake sure you've completed these tasks:\n\n- [ ] Forked the template from `TempeHS/TempeHS_Python-Flask_DevContainer`\n- [ ] Named your repository correctly (e.g., `2027CT.myCipherForge_Ben.J`)\n- [ ] Repository owner is **TempeHS** (not your personal account)\n- [ ] Added description: `\ud83d\udd10 My custom 5-layer encryption algorithm`\n- [ ] Created `.github/copilot-instructions.md` file\n- [ ] Opened and read through the **LICENSE** file (MIT License)\n- [ ] Updated **README.md** with the CipherForge template\n- [ ] Added your name to the Author section\n- [ ] Committed with message: `docs: set up initial README for CipherForge`\n\n> \ud83d\udc4d **Well done!** Your project is now properly set up. In the next lesson, we'll launch GitHub Codespaces and start building your encryption engine!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Summary\n\n| Topic | Key Points |\n|-------|------------|\n| **Encryption** | Transforms plaintext into ciphertext using a key; must be reversible |\n| **CipherForge** | Your 5-layer encryption: Substitution \u2192 Transposition \u2192 Key-Dependent \u2192 Noise \u2192 Wild Card |\n| **Template Repository** | Fork from `TempeHS/TempeHS_Python-Flask_DevContainer` |\n| **Repository Naming** | Use format: `{GRAD_YEAR}CT.myCipherForge_{FirstName}.{LastInitial}` |\n| **MIT License** | Permissive open source \u2014 anyone can use, modify, and share your code with credit |\n| **Commit Messages** | Use format: `type: description` (e.g., `feature: add phase 1 cipher`) |\n\n---\n\n### What's Coming in This Course\n\n| Lesson | What You'll Build |\n|--------|-------------------|\n| **1** | Repository setup (\u2705 Complete!) |\n| **2** | Codespaces + ASCII encoding basics |\n| **3** | Phase 1 \u2014 Substitution cipher |\n| **4** | Phase 2 \u2014 Transposition |\n| **5** | Phase 3 \u2014 Key-dependent encryption |\n| **6** | Phase 4 \u2014 Noise injection + Phase 5 \u2014 Your invention |\n| **7** | Flask web interface |\n| **8** | Testing, documentation, and presentation |\n| **Ext** | Authentication + custom pytest tests |\n\n**Next Up**: We'll launch GitHub Codespaces and learn how computers represent text as numbers \u2014 essential knowledge for encryption!"
+      }
+    }
+  ]
+}

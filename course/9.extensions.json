@@ -1,0 +1,159 @@
+{
+  "id": "extensions",
+  "title": "Extensions and Challenges",
+  "sections": [
+    {
+      "type": "markdown",
+      "content": {
+        "text": "# Lesson 9: Extensions and Challenges\n\n### Learning Objectives\n\nThese optional extensions allow you to:\n\n- Add authentication to your web application\n- Learn professional testing with `pytest`\n- Explore additional encryption techniques\n\n**These extensions are optional** - your main project is complete! Work through these if you want extra challenge.\n\n---\n\n## Extension 1: Basic Authentication\n\nRight now, anyone can use your Workshop. Let's add a simple login system.\n\n### Step 1: Add a Secret Key\n\nIn `app.py`, after `app = Flask(__name__)`, add:\n\n```python\nimport os\nfrom functools import wraps\nfrom flask import session, redirect, url_for\n\napp.secret_key = os.urandom(24)  # Required for sessions\n\n# Store users (in real apps, use a database with hashed passwords!)\n# SECURITY NOTE: Never store plain text passwords in production.\n# Use werkzeug.security.generate_password_hash() to hash passwords.\nUSERS = {\n    \"admin\": \"supersecret\",\n    \"student\": \"password123\"\n}\n```"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Secret Key Purpose",
+      "content": {
+        "question": "Why does Flask need a `secret_key` for sessions?",
+        "options": [
+          "To encrypt the HTML pages",
+          "To cryptographically sign session cookies so they can't be tampered with",
+          "To make the website load faster",
+          "To connect to the database"
+        ],
+        "correct_index": 1,
+        "explanation": "Flask's session data is stored in cookies on the user's browser. The secret_key is used to cryptographically sign these cookies \u2014 if someone tries to modify their session data (like changing `logged_in: False` to `True`), Flask detects the tampering and rejects the cookie. Without a secret_key, sessions would be insecure."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 2: Add Login Routes\n\nAdd these routes to `app.py`:\n\n```python\ndef login_required(f):\n    \"\"\"Decorator that ensures user is logged in.\"\"\"\n    @wraps(f)\n    def decorated_function(*args, **kwargs):\n        if not session.get('logged_in'):\n            return redirect(url_for('login'))\n        return f(*args, **kwargs)\n    return decorated_function\n\n\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    \"\"\"Handle login form.\"\"\"\n    if request.method == 'POST':\n        username = request.form.get('username', '')\n        password = request.form.get('password', '')\n        \n        if username in USERS and USERS[username] == password:\n            session['logged_in'] = True\n            session['username'] = username\n            return redirect(url_for('workshop'))\n        else:\n            return render_template('login.html', error=\"Invalid credentials\")\n    \n    return render_template('login.html')\n\n\n@app.route('/logout')\ndef logout():\n    \"\"\"Log out the current user.\"\"\"\n    session.clear()\n    return redirect(url_for('index'))\n```"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 3: The @login_required Decorator\n\nThe `@login_required` decorator is **powerful Python magic**:\n\n```python\n@app.route('/workshop')\n@login_required  # Add this line!\ndef workshop():\n    # This function ONLY runs if user is logged in\n    ...\n```\n\nA **decorator** wraps a function to add behavior. Here's what happens:\n\n1. User visits `/workshop`\n2. Python calls `login_required(workshop)`\n3. `login_required` checks: Is `session['logged_in']` True?\n4. If NO \u2192 redirect to `/login`\n5. If YES \u2192 call the actual `workshop()` function\n\nThis is the same pattern used by professional Flask applications!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 4: Create Login Template\n\nCreate `templates/login.html`:\n\n```html\n{% extends \"base.html\" %}\n\n{% block title %}Login - CipherForge{% endblock %}\n\n{% block content %}\n<div class=\"row justify-content-center\">\n    <div class=\"col-md-6\">\n        <div class=\"card\">\n            <div class=\"card-header\">\n                <h5>\ud83d\udd10 Login to CipherForge</h5>\n            </div>\n            <div class=\"card-body\">\n                {% if error %}\n                <div class=\"alert alert-danger\">{{ error }}</div>\n                {% endif %}\n                \n                <form method=\"POST\">\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">Username</label>\n                        <input type=\"text\" name=\"username\" class=\"form-control\" required>\n                    </div>\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">Password</label>\n                        <input type=\"password\" name=\"password\" class=\"form-control\" required>\n                    </div>\n                    <button type=\"submit\" class=\"btn btn-primary\">Login</button>\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n{% endblock %}\n```\n\nNow only logged-in users can access the Workshop!"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Authentication Test",
+      "content": {
+        "description": "If you implemented the authentication extension, describe what happens when: (1) You visit /workshop without logging in, (2) You login with wrong credentials, (3) You login with correct credentials. If you skipped this extension, explain why authentication is important for web applications.",
+        "example_answer": "(1) When I visit /workshop without logging in, I get redirected to /login automatically. (2) With wrong credentials, I see an error message 'Invalid credentials' on the login page. (3) With correct credentials (admin/supersecret), I get redirected to the workshop and can use the encryption.",
+        "min_words": 30
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "---\n\n## Extension 2: Professional Testing with pytest\n\nThe test file you wrote uses basic `assert` statements. Professional Python projects use **pytest**, which provides:\n\n- Better error messages\n- Test fixtures (setup/teardown)\n- Test discovery (auto-find tests)\n- Coverage reports\n\n### Install pytest\n\n```bash\npip install pytest\n```\n\n### Convert to pytest style\n\nFirst, create a `tests` folder and add a `conftest.py` file to fix imports:\n\n```bash\nmkdir tests\n```\n\n**Create `tests/conftest.py`** (this tells pytest where to find your modules):\n\n```python\nimport sys\nfrom pathlib import Path\n\n# Add project root to Python path so imports work\nsys.path.insert(0, str(Path(__file__).parent.parent))\n```\n\n**Create `tests/test_phases.py`**:\n\n```python\n\"\"\"pytest-style tests for CipherForge.\n\nRun with: pytest -v\n\"\"\"\n\nimport pytest\nfrom engine import (\n    phase1_encrypt, phase1_decrypt,\n    phase2_encrypt, phase2_decrypt,\n    encrypt, decrypt\n)\n\n\nclass TestPhase1:\n    \"\"\"Tests for Phase 1: Caesar shift.\"\"\"\n    \n    @pytest.fixture\n    def key(self):\n        \"\"\"Standard key for Phase 1 tests.\"\"\"\n        return {\"shift\": 5}\n    \n    def test_encrypt_changes_text(self, key):\n        \"\"\"Encryption should modify the original text.\"\"\"\n        original = \"Hello\"\n        encrypted = phase1_encrypt(original, key)\n        assert encrypted != original\n    \n    def test_decrypt_reverses_encrypt(self, key):\n        \"\"\"Decryption should restore original text.\"\"\"\n        original = \"Hello World\"\n        encrypted = phase1_encrypt(original, key)\n        decrypted = phase1_decrypt(encrypted, key)\n        assert decrypted == original\n    \n    @pytest.mark.parametrize(\"text\", [\n        \"a\",\n        \"AB\",\n        \"Hello World!\",\n        \"123 abc XYZ\",\n        \"Special: @#$%^&*()\"\n    ])\n    def test_various_inputs(self, key, text):\n        \"\"\"Test with various input strings.\"\"\"\n        encrypted = phase1_encrypt(text, key)\n        decrypted = phase1_decrypt(encrypted, key)\n        assert decrypted == text\n```"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Pytest Fixture",
+      "content": {
+        "question": "What does `@pytest.fixture` do?",
+        "options": [
+          "It marks a test that should be skipped",
+          "It creates reusable test setup that's automatically passed to test methods",
+          "It encrypts the test data",
+          "It runs the test multiple times"
+        ],
+        "correct_index": 1,
+        "explanation": "A pytest fixture is a function that provides data or objects that tests need. Instead of repeating `key = {'shift': 5}` in every test, you define it once as a fixture. Pytest automatically calls the fixture and passes the result to any test that includes it as a parameter. This follows the DRY (Don't Repeat Yourself) principle."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Run pytest\n\n```bash\npytest -v\n```\n\nThe `-v` flag shows verbose output with each test name.\n\nExpected output:\n\n```\n============================= test session starts ==============================\ncollected 6 items\n\ntests/test_phases.py::TestPhase1::test_encrypt_changes_text PASSED       [ 16%]\ntests/test_phases.py::TestPhase1::test_decrypt_reverses_encrypt PASSED   [ 33%]\ntests/test_phases.py::TestPhase1::test_various_inputs[a] PASSED          [ 50%]\ntests/test_phases.py::TestPhase1::test_various_inputs[AB] PASSED         [ 66%]\ntests/test_phases.py::TestPhase1::test_various_inputs[Hello World!] PASSED [83%]\ntests/test_phases.py::TestPhase1::test_various_inputs[123 abc XYZ] PASSED [100%]\n\n============================== 6 passed in 0.03s ===============================\n```"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Pytest Run",
+      "content": {
+        "description": "If you converted your tests to pytest style, paste the output of `pytest -v`. If you skipped this extension, explain what advantages pytest provides over basic assert statements.",
+        "example_answer": "============================= test session starts =============================\ncollected 6 items\n\ntests/test_phases.py::TestPhase1::test_encrypt_changes_text PASSED       [ 16%]\ntests/test_phases.py::TestPhase1::test_decrypt_reverses_encrypt PASSED   [ 33%]\ntests/test_phases.py::TestPhase1::test_various_inputs[a] PASSED          [ 50%]\ntests/test_phases.py::TestPhase1::test_various_inputs[AB] PASSED         [ 66%]\n...",
+        "min_words": 20
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "---\n\n## Extension 3: Additional Encryption Techniques\n\nHere are ideas for replacing or enhancing your Phase 5. Each technique below includes an explanation of **how it works** followed by working Python code.\n\n### XOR Encryption\n\n**How XOR Works:**\n\nXOR (exclusive OR) is a binary operation that compares two bits:\n- If the bits are **different** \u2192 result is 1\n- If the bits are **the same** \u2192 result is 0\n\n| A | B | A XOR B |\n|---|---|--------|\n| 0 | 0 | 0 |\n| 0 | 1 | 1 |\n| 1 | 0 | 1 |\n| 1 | 1 | 0 |\n\n**Why XOR is special for encryption:**\n\nXOR has a magical property: applying the same operation twice gives you back the original! Watch:\n\n```\nOriginal: 01001000 (ASCII 'H' = 72)\nKey:      00101010 (42)\nXOR:      01100010 (98)\n\nEncrypted:01100010 (98)\nKey:      00101010 (42)  \u2190 same key!\nXOR:      01001000 (72)  \u2190 back to 'H'!\n```\n\nThis means **the same function encrypts AND decrypts**. In Python, `^` is the XOR operator.\n\n> \u26a0\ufe0f **Warning**: Basic XOR can produce unprintable characters (outside ASCII 32-126). The version below keeps output in the printable range.\n\n```python\ndef xor_encrypt(text, key):\n    \"\"\"XOR each character with a key value (printable-safe version).\"\"\"\n    xor_key = key.get(\"xor_value\", 42)\n    result = []\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            # Keep in printable ASCII range\n            pos = ord(char) - 32\n            xor_pos = pos ^ (xor_key % 95)\n            result.append(chr((xor_pos % 95) + 32))\n        else:\n            result.append(char)\n    return ''.join(result)\n\n# XOR is its own inverse! Same function decrypts!\ndef xor_decrypt(text, key):\n    return xor_encrypt(text, key)  # XOR reverses itself\n```\n\n### Vigen\u00e8re Cipher\n\n**How Vigen\u00e8re Works:**\n\nThe Vigen\u00e8re cipher was invented in the 16th century and was called \"le chiffre ind\u00e9chiffrable\" (the unbreakable cipher) for 300 years!\n\n**The key insight**: Instead of shifting every letter by the same amount (like Caesar), Vigen\u00e8re uses a **keyword** where each letter determines a different shift amount.\n\n**Step-by-step example** with keyword \"KEY\":\n\n| Plaintext | H | E | L | L | O |\n|-----------|---|---|---|---|---|\n| Keyword   | K | E | Y | K | E |\n| Shift     | 10| 4 | 24| 10| 4 |\n| Result    | R | I | J | V | S |\n\n**How shifts are calculated:**\n- K = 10th letter = shift by 10\n- E = 4th letter = shift by 4  \n- Y = 24th letter = shift by 24\n\nThe keyword repeats: KEY-KEY-KEY... so longer keywords = harder to crack!\n\n> \ud83d\udca1 **Note**: This classic Vigen\u00e8re only encrypts letters (A-Z, a-z). Numbers, spaces, and symbols pass through unchanged. To use as Phase 5, you'd need to extend it to handle all printable ASCII like your other phases do.\n\n```python\ndef vigenere_encrypt(text, key):\n    \"\"\"Vigen\u00e8re cipher with repeating keyword (letters only).\"\"\"\n    keyword = key.get(\"vigenere_key\", \"KEY\")\n    result = []\n    key_index = 0  # Track position in keyword separately\n    for char in text:\n        if char.isalpha():\n            shift = ord(keyword[key_index % len(keyword)].upper()) - ord('A')\n            code = ord(char)\n            if char.isupper():\n                new_char = chr((code - ord('A') + shift) % 26 + ord('A'))\n            else:\n                new_char = chr((code - ord('a') + shift) % 26 + ord('a'))\n            result.append(new_char)\n            key_index += 1  # Only advance key for letters\n        else:\n            result.append(char)\n    return ''.join(result)\n\ndef vigenere_decrypt(text, key):\n    \"\"\"Reverse Vigen\u00e8re cipher.\"\"\"\n    keyword = key.get(\"vigenere_key\", \"KEY\")\n    result = []\n    key_index = 0\n    for char in text:\n        if char.isalpha():\n            shift = ord(keyword[key_index % len(keyword)].upper()) - ord('A')\n            code = ord(char)\n            if char.isupper():\n                new_char = chr((code - ord('A') - shift) % 26 + ord('A'))\n            else:\n                new_char = chr((code - ord('a') - shift) % 26 + ord('a'))\n            result.append(new_char)\n            key_index += 1\n        else:\n            result.append(char)\n    return ''.join(result)\n```\n\n### Rail Fence Cipher\n\n**How Rail Fence Works:**\n\nThe Rail Fence cipher is a **transposition cipher** \u2014 it doesn't change the letters, just rearranges their positions. Imagine writing your message in a zigzag pattern across multiple \"rails\" (rows).\n\n**Step-by-step example** with 3 rails and \"HELLO WORLD\":\n\n```\nRail 1: H . . . O . . . R . .\nRail 2: . E . L . . W . . L .\nRail 3: . . L . . . . O . . D\n```\n\nRead each rail left-to-right to get the encrypted text: **HOR-EL WL-LOD** \u2192 `\"HORELWLLOD\"`\n\n**The zigzag pattern:**\n1. Start at Rail 1, write first letter\n2. Move DOWN to Rail 2, write next letter\n3. Move DOWN to Rail 3 (bottom), write next letter\n4. Change direction! Move UP to Rail 2\n5. Move UP to Rail 1 (top), change direction again\n6. Repeat the bounce pattern\n\n**Why it's clever:** The letters are scrambled based on position, not value. To decrypt, you need to know how many rails were used to reconstruct the zigzag and read it properly.\n\n```python\ndef rail_fence_encrypt(text, key):\n    \"\"\"Rail fence transposition cipher.\"\"\"\n    rails = key.get(\"rails\", 3)\n    if rails < 2 or len(text) == 0:\n        return text\n    \n    fence = [[] for _ in range(rails)]\n    \n    rail = 0\n    direction = 1\n    \n    for char in text:\n        fence[rail].append(char)\n        rail += direction\n        if rail == 0 or rail == rails - 1:\n            direction *= -1\n    \n    return ''.join([''.join(row) for row in fence])\n\n\ndef rail_fence_decrypt(text, key):\n    \"\"\"Reverse rail fence cipher.\"\"\"\n    rails = key.get(\"rails\", 3)\n    if rails < 2 or len(text) == 0:\n        return text\n    \n    # First, calculate how many chars go on each rail\n    rail_lengths = [0] * rails\n    rail = 0\n    direction = 1\n    for _ in text:\n        rail_lengths[rail] += 1\n        rail += direction\n        if rail == 0 or rail == rails - 1:\n            direction *= -1\n    \n    # Split ciphertext into rail segments\n    fence = []\n    pos = 0\n    for length in rail_lengths:\n        fence.append(list(text[pos:pos + length]))\n        pos += length\n    \n    # Read off in zigzag order\n    result = []\n    rail = 0\n    direction = 1\n    for _ in text:\n        result.append(fence[rail].pop(0))\n        rail += direction\n        if rail == 0 or rail == rails - 1:\n            direction *= -1\n    \n    return ''.join(result)\n```\n\nTry implementing one of these in your Phase 5!"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Future Extension",
+      "content": {
+        "description": "If you could add one more feature to CipherForge, what would it be? Describe what it would do and how you would implement it.",
+        "example_answer": "I would add a 'strength meter' that estimates how secure the encryption is based on the key parameters. It would check the shift amount, block size, password length, and noise interval. A score under 50 would show red (weak), 50-80 yellow (moderate), and over 80 green (strong). This would help users understand which key settings provide better security.",
+        "min_words": 40
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "---\n\n## Extension 4: SQL Database for User Authentication\n\nIn Extension 1, we used a simple dictionary to store users:\n\n```python\nUSERS = {\"admin\": \"supersecret\", \"student\": \"password123\"}\n```\n\nThis has serious problems:\n1. **Passwords are stored in plain text** - anyone who sees the code can read them\n2. **Users are lost when the server restarts** - they're only in memory\n3. **Can't add new users** - the dictionary is hardcoded\n\nLet's fix all of this by using a **SQLite database** with **hashed passwords**.\n\n### What is SQLite?\n\nSQLite is a lightweight database that stores everything in a single file. It's perfect for small applications because:\n- No separate server needed\n- Built into Python (no installation required)\n- The entire database is just one `.db` file\n\n### What is Password Hashing?\n\nWhen you hash a password, you convert it into a scrambled string that **cannot be reversed**:\n\n```\n\"password123\" \u2192 \"scrypt:32768:8:1$abc123$9f8e7d6c...\"\n```\n\nEven if a hacker steals your database, they can't see the original passwords! To check a login, you hash the entered password and compare the hashes.\n\n### Step 1: Set Up the Database\n\nCreate a new file called `database.py`:\n\n```python\n\"\"\"Database setup for user authentication.\"\"\"\n\nimport sqlite3\nfrom werkzeug.security import generate_password_hash, check_password_hash\n\nDATABASE = 'users.db'\n\n\ndef get_db():\n    \"\"\"Get a database connection.\"\"\"\n    conn = sqlite3.connect(DATABASE)\n    conn.row_factory = sqlite3.Row  # Access columns by name\n    return conn\n\n\ndef init_db():\n    \"\"\"Create the users table if it doesn't exist.\"\"\"\n    conn = get_db()\n    conn.execute('''\n        CREATE TABLE IF NOT EXISTS users (\n            id INTEGER PRIMARY KEY AUTOINCREMENT,\n            username TEXT UNIQUE NOT NULL,\n            password_hash TEXT NOT NULL,\n            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP\n        )\n    ''')\n    conn.commit()\n    conn.close()\n    print(\"Database initialized!\")\n```"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Password Storage",
+      "content": {
+        "question": "Why do we store `password_hash` instead of `password` in the database?",
+        "options": [
+          "Hashes take up less storage space",
+          "Hashes are faster to compare",
+          "If the database is stolen, attackers can't see the original passwords",
+          "Hashes look more professional"
+        ],
+        "correct_index": 2,
+        "explanation": "Password hashing is a one-way function - you can convert a password to a hash, but you cannot convert a hash back to a password. This means even if an attacker gains access to your database, they only see scrambled hashes, not the actual passwords users typed. This is a critical security practice used by every professional application."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 2: Add User Registration and Login Functions\n\nAdd these functions to `database.py`:\n\n```python\ndef register_user(username, password):\n    \"\"\"Register a new user with hashed password.\n    \n    Args:\n        username: The username to register\n        password: The plain text password (will be hashed)\n    \n    Returns:\n        True if successful, False if username already exists\n    \"\"\"\n    conn = get_db()\n    try:\n        # generate_password_hash creates a secure hash\n        password_hash = generate_password_hash(password)\n        conn.execute(\n            'INSERT INTO users (username, password_hash) VALUES (?, ?)',\n            (username, password_hash)\n        )\n        conn.commit()\n        return True\n    except sqlite3.IntegrityError:\n        # Username already exists (UNIQUE constraint failed)\n        return False\n    finally:\n        conn.close()\n\n\ndef verify_user(username, password):\n    \"\"\"Check if username and password are correct.\n    \n    Args:\n        username: The username to check\n        password: The plain text password to verify\n    \n    Returns:\n        True if credentials are valid, False otherwise\n    \"\"\"\n    conn = get_db()\n    user = conn.execute(\n        'SELECT password_hash FROM users WHERE username = ?',\n        (username,)\n    ).fetchone()\n    conn.close()\n    \n    if user is None:\n        return False\n    \n    # check_password_hash compares the entered password with stored hash\n    return check_password_hash(user['password_hash'], password)\n\n\ndef get_all_users():\n    \"\"\"Get list of all usernames (for admin purposes).\"\"\"\n    conn = get_db()\n    users = conn.execute('SELECT username, created_at FROM users').fetchall()\n    conn.close()\n    return users\n```\n\n### Understanding the Security\n\nNotice these key security practices:\n\n| Practice | Why It Matters |\n|----------|----------------|\n| `generate_password_hash()` | Uses a strong algorithm (scrypt) with random salt |\n| `check_password_hash()` | Compares hashes safely without timing attacks |\n| `?` placeholders | Prevents SQL injection attacks |\n| `UNIQUE` constraint | Prevents duplicate usernames at database level |"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 3: Update app.py to Use the Database\n\nReplace the old dictionary-based login with database functions:\n\n```python\n# At the top of app.py, add:\nfrom database import init_db, register_user, verify_user\n\n# Initialize database when app starts\ninit_db()\n\n# Remove the old USERS dictionary!\n# USERS = {\"admin\": \"supersecret\"}  # DELETE THIS LINE\n```\n\nUpdate the login route:\n\n```python\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    \"\"\"Handle login form using database.\"\"\"\n    if request.method == 'POST':\n        username = request.form.get('username', '')\n        password = request.form.get('password', '')\n        \n        # Use database verification instead of dictionary\n        if verify_user(username, password):\n            session['logged_in'] = True\n            session['username'] = username\n            return redirect(url_for('workshop'))\n        else:\n            return render_template('login.html', error=\"Invalid credentials\")\n    \n    return render_template('login.html')\n```\n\n### Step 4: Add User Registration\n\nAdd a registration route to `app.py`:\n\n```python\n@app.route('/register', methods=['GET', 'POST'])\ndef register():\n    \"\"\"Handle user registration.\"\"\"\n    if request.method == 'POST':\n        username = request.form.get('username', '')\n        password = request.form.get('password', '')\n        confirm = request.form.get('confirm', '')\n        \n        # Validation\n        if len(username) < 3:\n            return render_template('register.html', \n                error=\"Username must be at least 3 characters\")\n        \n        if len(password) < 8:\n            return render_template('register.html', \n                error=\"Password must be at least 8 characters\")\n        \n        if password != confirm:\n            return render_template('register.html', \n                error=\"Passwords don't match\")\n        \n        # Try to register\n        if register_user(username, password):\n            return redirect(url_for('login'))\n        else:\n            return render_template('register.html', \n                error=\"Username already exists\")\n    \n    return render_template('register.html')\n```"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "### Step 5: Create Registration Template\n\nCreate `templates/register.html`:\n\n```html\n{% extends \"base.html\" %}\n\n{% block title %}Register - CipherForge{% endblock %}\n\n{% block content %}\n<div class=\"row justify-content-center\">\n    <div class=\"col-md-6\">\n        <div class=\"card\">\n            <div class=\"card-header\">\n                <h5>\ud83d\udcdd Create Account</h5>\n            </div>\n            <div class=\"card-body\">\n                {% if error %}\n                <div class=\"alert alert-danger\">{{ error }}</div>\n                {% endif %}\n                \n                <form method=\"POST\">\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">Username</label>\n                        <input type=\"text\" name=\"username\" class=\"form-control\" \n                               minlength=\"3\" required>\n                        <small class=\"text-muted\">At least 3 characters</small>\n                    </div>\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">Password</label>\n                        <input type=\"password\" name=\"password\" class=\"form-control\" \n                               minlength=\"8\" required>\n                        <small class=\"text-muted\">At least 8 characters</small>\n                    </div>\n                    <div class=\"mb-3\">\n                        <label class=\"form-label\">Confirm Password</label>\n                        <input type=\"password\" name=\"confirm\" class=\"form-control\" required>\n                    </div>\n                    <button type=\"submit\" class=\"btn btn-success\">Register</button>\n                    <a href=\"{{ url_for('login') }}\" class=\"btn btn-link\">\n                        Already have an account? Login\n                    </a>\n                </form>\n            </div>\n        </div>\n    </div>\n</div>\n{% endblock %}\n```\n\n### Testing Your Database\n\nRun these commands in Python to test:\n\n```python\npython\n>>> from database import init_db, register_user, verify_user, get_all_users\n>>> init_db()\nDatabase initialized!\n>>> register_user(\"alice\", \"securepass123\")\nTrue\n>>> register_user(\"alice\", \"anotherpass\")  # Duplicate!\nFalse\n>>> verify_user(\"alice\", \"securepass123\")\nTrue\n>>> verify_user(\"alice\", \"wrongpassword\")\nFalse\n>>> get_all_users()\n[('alice', '2026-02-19 10:30:45')]\n```\n\nCheck that `users.db` file was created in your project folder!"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Database Authentication",
+      "content": {
+        "description": "If you implemented the SQL database extension, describe: (1) What tables exist in your database, (2) How password hashing protects users, (3) What happens when someone tries to register with an existing username. If you skipped this, explain why databases are better than hardcoded dictionaries for storing user data.",
+        "example_answer": "(1) My database has a 'users' table with columns: id, username, password_hash, and created_at. (2) Password hashing converts the password into an irreversible scrambled string - even if hackers steal my database, they can't see the original passwords. (3) When someone tries to register with an existing username, SQLite raises an IntegrityError because of the UNIQUE constraint, and my code catches this and shows 'Username already exists'.",
+        "min_words": 40
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "---\n\n## Git Commit for Extensions\n\nIf you completed any extensions:\n\n```bash\ngit add -A\ngit commit -m \"feat: Add extensions (auth, pytest, etc.)\"\ngit push\n```\n\n---\n\n## \ud83c\udfaf Final Achievements\n\nYou've completed the CipherForge project! Here's what you've built:\n\n| Achievement | Description |\n|-------------|-------------|\n| **Cryptographer** | Designed a 5-phase encryption algorithm |\n| **Python Developer** | Wrote modular, testable code |\n| **Web Developer** | Built a Flask application from scratch |\n| **Security Engineer** | Implemented key-based security |\n| **QA Engineer** | Created automated tests |\n| **Technical Writer** | Documented your project professionally |\n\n### What's Next?\n\nThese skills transfer to:\n\n- **Software Engineering**: Modular code, testing, documentation\n- **Cybersecurity**: Understanding how encryption works\n- **Web Development**: Flask, HTML, forms, sessions\n- **Computer Science**: Algorithms, data structures, modular arithmetic\n\n---\n\n## \ud83d\udd10 Congratulations, CipherForge Engineer! \ud83d\udd10\n\nYou built an encryption system from scratch. You understand how substitution, transposition, key-dependence, and noise work together to protect information.\n\nNow go encrypt something! \ud83d\ude80"
+      }
+    }
+  ]
+}

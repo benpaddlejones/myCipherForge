@@ -1,0 +1,178 @@
+{
+  "id": "phase1-substitution",
+  "title": "Phase 1: Building Your Substitution Layer",
+  "description": "Transform your simple_shift into a proper Phase 1 encryption layer. Learn about encryption keys, refactor your code into the 5-phase structure, and see why substitution alone isn't enough.",
+  "sections": [
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Learning Objectives\n\n- Understand the concept of encryption keys\n- Refactor `simple_shift` into `phase1_encrypt` and `phase1_decrypt`\n- Use a key dictionary to store encryption parameters\n- Test that your phase is reversible\n- Understand why substitution ciphers are vulnerable to attack\n- Commit your Phase 1 implementation\n\n---\n\n## \ud83d\udd27 Upgrading Your Cipher\n\nIn Lesson 2, you built `simple_shift()` \u2014 a working Caesar cipher.\n\nNow we're going to:\n\n1. **Restructure it** as Phase 1 of your 5-phase algorithm\n2. **Add a key system** so all phases share encryption settings\n3. **Test reversibility** properly\n4. **Understand the weakness** and why we need more phases\n\nBy the end of this lesson, your `engine.py` will have a proper Phase 1!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## What is an Encryption Key?\n\nAn **encryption key** is the secret information that controls how encryption works.\n\n### Analogy: A Physical Lock\n\n| Concept | Lock Analogy | Cipher Analogy |\n|---------|--------------|-----------------|\n| **Algorithm** | The lock mechanism | Your Python code |\n| **Key** | The physical key | The shift value (or other settings) |\n| **Secret** | Only key holder can open | Only key holder can decrypt |\n\n### Why Keys Matter\n\nWith the same key, two people can:\n\n1. Person A **encrypts** a message\n2. Person B **decrypts** it using the same key\n\nWithout the key, an attacker sees only scrambled gibberish.\n\n### In CipherForge\n\nYour key will be a Python dictionary containing settings for all 5 phases:\n\n```python\nkey = {\n    \"shift\": 7,           # Phase 1 setting\n    \"pattern\": [2, 1, 3], # Phase 2 setting (later)\n    \"password\": \"secret\", # Phase 3 setting (later)\n    # ... more settings for Phases 4 & 5\n}\n```\n\nThis way, one key controls your entire algorithm!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Encryption Keys",
+      "content": {
+        "question": "What does an encryption key control?",
+        "options": [
+          "The programming language used",
+          "How the algorithm transforms data (e.g., shift amount)",
+          "The color of the output text",
+          "How fast the code runs"
+        ],
+        "correct_index": 1,
+        "explanation": "The key controls HOW the algorithm works \u2014 like the shift amount in a Caesar cipher. The algorithm (your code) stays the same, but different keys produce different outputs. This is why the key must be kept secret, not the algorithm itself!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 1: Create the Phase 1 Functions\n\nOpen your `engine.py` file in Codespaces.\n\n### Delete simple_shift and simple_unshift\n\nWe're replacing them with properly named functions. Delete these old functions (but keep the file header!).\n\n### Add Phase 1 Encrypt\n\nType this new function:\n\n```python\ndef phase1_encrypt(text, key):\n    \"\"\"\n    Phase 1: Substitution \u2014 Shift every character by a fixed amount.\n    \n    This layer changes WHAT each character is (its identity).\n    \n    Args:\n        text: The plaintext string to encrypt\n        key: Dictionary containing encryption settings\n        \n    Returns:\n        The encrypted string with all characters shifted\n    \"\"\"\n    # Get the shift amount from the key (default to 5 if not specified)\n    shift = key.get(\"shift\", 5)\n    \n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:  # Printable ASCII range\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    \n    return result\n```\n\n### Add Phase 1 Decrypt\n\nType this below the encrypt function:\n\n```python\ndef phase1_decrypt(text, key):\n    \"\"\"\n    Phase 1: Reverse the substitution.\n    \n    Decryption shifts in the OPPOSITE direction (subtracts instead of adds).\n    \n    Args:\n        text: The encrypted string\n        key: Dictionary containing the same encryption settings\n        \n    Returns:\n        The decrypted (original) string\n    \"\"\"\n    shift = key.get(\"shift\", 5)\n    \n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position - shift) % 95  # SUBTRACT to reverse!\n            result += chr(new_position + 32)\n        else:\n            result += char\n    \n    return result\n```\n\n### Save the File (Ctrl + S)"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 2: Test in the REPL\n\nLet's verify your Phase 1 works correctly.\n\n### Open Python REPL\n\n```bash\npython\n```\n\n### Import and Test\n\n```python\nfrom engine import phase1_encrypt, phase1_decrypt\n\n# Create a key with shift value 7\nkey = {\"shift\": 7}\n\n# Test encryption\nmessage = \"Hello CipherForge!\"\nencrypted = phase1_encrypt(message, key)\nprint(f\"Encrypted: {encrypted}\")\n\n# Test decryption\ndecrypted = phase1_decrypt(encrypted, key)\nprint(f\"Decrypted: {decrypted}\")\n\n# Verify reversibility\nprint(f\"Match: {decrypted == message}\")\n```\n\n### Expected Output\n\n```\nEncrypted: Olssv'Jpwoly-vynl(\nDecrypted: Hello CipherForge!\nMatch: True\n```\n\n### Try Different Keys\n\n```python\n# Test with shift 13 (ROT13 equivalent for letters)\nkey13 = {\"shift\": 13}\nphase1_encrypt(\"Attack at dawn!\", key13)\n\n# Test with shift 1\nkey1 = {\"shift\": 1}\nphase1_encrypt(\"ABC xyz 123\", key1)\n```\n\n### Exit Python\n\n```python\nexit()\n```"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Phase 1 Testing",
+      "content": {
+        "description": "Test your phase1_encrypt and phase1_decrypt with THREE different shift values (e.g., 3, 15, and 50). For each test, record: (1) the shift value, (2) your test message, (3) the encrypted result, (4) whether decrypt returns the original. Do all three pass?",
+        "example_answer": "Test 1: shift=3, message='Python rocks!', encrypted='S|wkrq#urfnv$', decrypt worked \u2713\nTest 2: shift=15, message='2026 is cool', encrypted='A?AE,xd,nzzz', decrypt worked \u2713\nTest 3: shift=50, message='Hello World', encrypted='z4==?qg?B=3', decrypt worked \u2713\nAll three tests passed! Phase 1 is reversible for any shift value.",
+        "min_words": 30,
+        "max_words": 150
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 3: Add the Master Functions\n\nYour final algorithm needs `encrypt()` and `decrypt()` functions that call all 5 phases.\n\nFor now, they'll only call Phase 1. We'll add more phases later.\n\n### Add Master Encrypt\n\nAdd this at the bottom of `engine.py`:\n\n```python\ndef encrypt(text, key):\n    \"\"\"\n    CipherForge Master Encryption \u2014 Applies all 5 phases.\n    \n    Currently implemented: Phase 1 only\n    Coming soon: Phases 2-5\n    \n    Args:\n        text: The plaintext to encrypt\n        key: Dictionary with settings for all phases\n        \n    Returns:\n        Fully encrypted string\n    \"\"\"\n    # Phase 1: Substitution\n    result = phase1_encrypt(text, key)\n    \n    # TODO: Phase 2 \u2014 Transposition\n    # result = phase2_encrypt(result, key)\n    \n    # TODO: Phase 3 \u2014 Key-Dependent\n    # result = phase3_encrypt(result, key)\n    \n    # TODO: Phase 4 \u2014 Noise Injection\n    # result = phase4_encrypt(result, key)\n    \n    # TODO: Phase 5 \u2014 Wild Card\n    # result = phase5_encrypt(result, key)\n    \n    return result\n```\n\n### Add Master Decrypt\n\n```python\ndef decrypt(text, key):\n    \"\"\"\n    CipherForge Master Decryption \u2014 Reverses all 5 phases.\n    \n    IMPORTANT: Phases must be reversed in OPPOSITE order!\n    Encrypt: 1 \u2192 2 \u2192 3 \u2192 4 \u2192 5\n    Decrypt: 5 \u2192 4 \u2192 3 \u2192 2 \u2192 1\n    \n    Args:\n        text: The encrypted text\n        key: Same key used for encryption\n        \n    Returns:\n        Original plaintext\n    \"\"\"\n    result = text\n    \n    # TODO: Phase 5 \u2014 Reverse Wild Card (first!)\n    # result = phase5_decrypt(result, key)\n    \n    # TODO: Phase 4 \u2014 Reverse Noise Injection\n    # result = phase4_decrypt(result, key)\n    \n    # TODO: Phase 3 \u2014 Reverse Key-Dependent\n    # result = phase3_decrypt(result, key)\n    \n    # TODO: Phase 2 \u2014 Reverse Transposition\n    # result = phase2_decrypt(result, key)\n    \n    # Phase 1: Reverse Substitution (last!)\n    result = phase1_decrypt(result, key)\n    \n    return result\n```\n\n### Save the File"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Phase Order",
+      "content": {
+        "question": "If encryption applies phases in order 1\u21922\u21923\u21924\u21925, what order must decryption use?",
+        "options": [
+          "1\u21922\u21923\u21924\u21925 (same order)",
+          "5\u21924\u21923\u21922\u21921 (reverse order)",
+          "Random order works fine",
+          "Only Phase 1 needs to be reversed"
+        ],
+        "correct_index": 1,
+        "explanation": "Decryption must reverse the phases in OPPOSITE order! Think of it like putting on and taking off layers of clothing \u2014 the first thing you put on is the last thing you take off. Phase 5 was applied last during encryption, so it must be reversed first during decryption."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 4: Test Master Functions\n\nLet's verify the master encrypt/decrypt work.\n\n### In the REPL\n\n```bash\npython\n```\n\n```python\nfrom engine import encrypt, decrypt\n\n# Create a key\nkey = {\"shift\": 7}\n\n# Test master functions\nmessage = \"My secret message 123!\"\nencrypted = encrypt(message, key)\ndecrypted = decrypt(encrypted, key)\n\nprint(f\"Original:  {message}\")\nprint(f\"Encrypted: {encrypted}\")\nprint(f\"Decrypted: {decrypted}\")\nprint(f\"Success: {decrypted == message}\")\n```\n\n### Expected Output\n\n```\nOriginal:  My secret message 123!\nEncrypted: T?'zljyl{'tlzzhnl'9:;(\nDecrypted: My secret message 123!\nSuccess: True\n```\n\n\ud83c\udf89 **Your Phase 1 is integrated!**\n\n```python\nexit()\n```"
+      }
+    },
+    {
+      "type": "python",
+      "title": "Complete Phase 1",
+      "content": {
+        "description": "Write a complete test that:\n1. Creates a key with shift value 11\n2. Encrypts 'Phase 1 Complete!'\n3. Decrypts the result\n4. Prints TRUE if decrypt matches original, FALSE otherwise",
+        "starter_code": "# Phase 1 functions\ndef phase1_encrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase1_decrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position - shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\n# Master functions\ndef encrypt(text, key):\n    return phase1_encrypt(text, key)\n\ndef decrypt(text, key):\n    return phase1_decrypt(text, key)\n\n# YOUR TEST CODE HERE\nkey = # Create key with shift 11\nmessage = \"Phase 1 Complete!\"\n\n# Encrypt, decrypt, and check\n",
+        "hints": [
+          "key = {\"shift\": 11}",
+          "Use encrypt(message, key) then decrypt(result, key)",
+          "Print True/False based on whether decrypted == message"
+        ],
+        "example_answer": "def phase1_encrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase1_decrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position - shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef encrypt(text, key):\n    return phase1_encrypt(text, key)\n\ndef decrypt(text, key):\n    return phase1_decrypt(text, key)\n\nkey = {\"shift\": 11}\nmessage = \"Phase 1 Complete!\"\n\nencrypted = encrypt(message, key)\ndecrypted = decrypt(encrypted, key)\n\nprint(decrypted == message)",
+        "test_cases": [
+          {
+            "input": "",
+            "expected": "True"
+          }
+        ],
+        "min_lines": 3,
+        "must_differ_from_starter": true
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Commit Checkpoint!\n\nYou've built Phase 1. Time to save your progress.\n\n### Commands\n\n```bash\ngit add .\ngit commit -m \"feature: implement Phase 1 substitution cipher with master functions\"\ngit push\n```\n\n### Verify on GitHub\n\n1. Refresh your repository page\n2. Click on `engine.py`\n3. You should see:\n   - File header\n   - `phase1_encrypt()` function\n   - `phase1_decrypt()` function\n   - `encrypt()` master function\n   - `decrypt()` master function"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \ud83d\udd13 The Weakness: Brute Force Attack\n\nYour Phase 1 cipher is working \u2014 but it's **not secure**.\n\n### The Problem\n\nThere are only **95 possible shift values** (0 through 94).\n\nAn attacker can try ALL of them:\n\n```python\nciphertext = \"Olssv'~vysk(\"\n\nfor shift in range(95):\n    key = {\"shift\": shift}\n    attempt = phase1_decrypt(ciphertext, key)\n    print(f\"Shift {shift}: {attempt}\")\n```\n\n### Output (partial)\n\n```\nShift 0: Olssv'~vysk(\nShift 1: Nkrru&}uxrj'\nShift 2: Mjqqt%|twqi&\n...\nShift 7: Hello World!   \u2190 FOUND IT!\n...\nShift 94: Pmttw(ozwtl)\n```\n\n### Why This Is Bad\n\n| Metric | Phase 1 Alone |\n|--------|---------------|\n| Possible keys | 95 |\n| Time to crack | < 1 second |\n| Security level | \u274c None |\n\nA computer can try 95 guesses **instantly**."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \ud83d\udd13 The Weakness: Frequency Analysis\n\nEven without brute force, there's another attack.\n\n### How It Works\n\nIn English text:\n\n- 'E' is the most common letter (~13%)\n- 'T' is second (~9%)\n- 'A' is third (~8%)\n\nAfter Caesar shift, 'E' becomes a different character \u2014 but it's **still the most common**!\n\n### Example Attack\n\n```\nCiphertext: \"wkh txlfn eurzq ira mxpsv ryhu wkh odcb grj\"\n\nStep 1: Count character frequency\n  Most common: 'r' (appears 4 times)\n\nStep 2: If 'r' represents 'e'...\n  ord('r') - ord('e') = 13\n  Shift must be 13!\n\nStep 3: Decrypt with shift 13\n  Result: \"the quick brown fox jumps over the lazy dog\"\n```\n\n### Why Multiple Phases Help\n\n| Phase | What It Defeats |\n|-------|----------------|\n| 1 (Substitution) | Nothing alone |\n| 2 (Transposition) | Breaks word boundaries |\n| 3 (Key-dependent) | Makes shift depend on position |\n| 4 (Noise) | Adds fake characters to skew frequency |\n| 5 (Wild Card) | Your secret weapon! |\n\nEach layer makes frequency analysis **harder**!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Frequency Analysis",
+      "content": {
+        "question": "Why does frequency analysis work against a simple Caesar cipher?",
+        "options": [
+          "Because the code runs slowly",
+          "Because every 'E' in plaintext becomes the same character in ciphertext, preserving the frequency pattern",
+          "Because computers are faster than humans",
+          "Because Python is an interpreted language"
+        ],
+        "correct_index": 1,
+        "explanation": "In a Caesar cipher, if 'E' shifts to 'H', then EVERY 'E' becomes 'H'. So the most common letter in the ciphertext is probably the shifted version of 'E'. This pattern leaks information about the original text! Phase 2 (Transposition) and Phase 3 (Key-Dependent) help break this predictability."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Try to Crack It Yourself!\n\nLet's see how easy Phase 1 is to break.\n\n### Challenge\n\nThis message was encrypted with Phase 1. Can you crack it?\n\n```\nCiphertext: \"Jrypbzr gb PvcuresBefr!'\"\n```\n\n### Method 1: Brute Force\n\nIn the Python REPL:\n\n```python\nfrom engine import phase1_decrypt\n\nciphertext = \"Jrypbzr gb PvcuresBefr!'\"\n\nfor shift in range(95):\n    key = {\"shift\": shift}\n    attempt = phase1_decrypt(ciphertext, key)\n    if \"Welcome\" in attempt or \"welcome\" in attempt:\n        print(f\"CRACKED! Shift {shift}: {attempt}\")\n        break\n```\n\n### Method 2: Frequency Analysis\n\n```python\n# Count characters\nfrom collections import Counter\n\nciphertext = \"Jrypbzr gb PvcuresBefr!'\"\ncounts = Counter(c for c in ciphertext if c.isalpha())\nprint(counts.most_common(3))\n\n# Most common is probably 'e' shifted...\n```\n\n**Try both methods!** Which finds the answer first?"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Crack the Code",
+      "content": {
+        "description": "Using either brute force or frequency analysis, crack the ciphertext 'Jrypbzr gb PvcuresBefr!' and find: (1) the shift value used, (2) the original message, (3) which method you used.",
+        "example_answer": "I used brute force to try all 95 shifts. The shift value was 13 (ROT13). The original message is 'Welcome to CipherForge!' I found it by running the brute force loop and checking for readable English.",
+        "min_words": 20,
+        "max_words": 100
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \ud83c\udfa8 Optional: Customize Your Substitution\n\nThe Caesar shift is just ONE type of substitution. You can make Phase 1 more creative!\n\n### Idea 1: Variable Shift by Character Type\n\n```python\ndef phase1_encrypt(text, key):\n    letter_shift = key.get(\"letter_shift\", 5)\n    digit_shift = key.get(\"digit_shift\", 3)\n    symbol_shift = key.get(\"symbol_shift\", 7)\n    \n    result = \"\"\n    for char in text:\n        if char.isalpha():\n            shift = letter_shift\n        elif char.isdigit():\n            shift = digit_shift\n        else:\n            shift = symbol_shift\n        # ... apply shift\n```\n\n### Idea 2: Reverse Alphabet (Atbash)\n\n```python\n# A\u2194Z, B\u2194Y, C\u2194X, etc.\nif 'A' <= char <= 'Z':\n    result += chr(ord('Z') - (ord(char) - ord('A')))\n```\n\n### Idea 3: Keyword Substitution\n\nUse a keyword to scramble the alphabet!\n\n**Keep your basic version working first**, then experiment with variations if you have time."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Current engine.py Structure\n\nYour file should now look like this:\n\n```python\n\"\"\"\nCipherForge \u2014 Encryption Engine\n================================\n... (header) ...\n\"\"\"\n\ndef phase1_encrypt(text, key):\n    \"\"\"Phase 1: Substitution \u2014 Shift characters.\"\"\"\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase1_decrypt(text, key):\n    \"\"\"Phase 1: Reverse substitution.\"\"\"\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position - shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef encrypt(text, key):\n    \"\"\"Master encrypt \u2014 all 5 phases.\"\"\"\n    result = phase1_encrypt(text, key)\n    # TODO: Phases 2-5\n    return result\n\ndef decrypt(text, key):\n    \"\"\"Master decrypt \u2014 reverse all phases.\"\"\"\n    result = text\n    # TODO: Phases 5-2\n    result = phase1_decrypt(result, key)\n    return result\n```"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \u2705 Checklist: Before Moving On\n\n- [ ] Deleted old `simple_shift` and `simple_unshift` functions\n- [ ] Added `phase1_encrypt()` with key dictionary\n- [ ] Added `phase1_decrypt()` (subtracts instead of adds)\n- [ ] Added `encrypt()` master function with TODO comments\n- [ ] Added `decrypt()` master function with reverse order\n- [ ] Tested in REPL with multiple shift values\n- [ ] Verified reversibility (`decrypt(encrypt(x)) == x`)\n- [ ] Cracked the sample ciphertext\n- [ ] Committed with message: `feature: implement Phase 1 substitution cipher with master functions`\n- [ ] Pushed to GitHub\n\n> \ud83c\udfaf **Phase 1 Complete!** Your substitution layer works, but it's vulnerable to both brute force and frequency analysis. In the next lesson, you'll add Phase 2: Transposition \u2014 which rearranges characters to break those patterns!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Summary\n\n| Topic | Key Points |\n|-------|------------|\n| **Encryption Key** | Dictionary containing settings for all phases |\n| **key.get()** | Safely retrieves value with default fallback |\n| **Phase 1** | Substitution \u2014 changes WHAT characters are |\n| **Reversibility** | encrypt then decrypt = original |\n| **Phase Order** | Encrypt 1\u21925, Decrypt 5\u21921 (reverse!) |\n| **Brute Force** | Try all 95 keys in < 1 second |\n| **Frequency Analysis** | Common letters reveal the shift value |\n\n---\n\n### Code Progress\n\n| Function | Status |\n|----------|--------|\n| `phase1_encrypt()` | \u2705 Complete |\n| `phase1_decrypt()` | \u2705 Complete |\n| `phase2_encrypt()` | \ud83d\udd32 Next lesson |\n| `phase2_decrypt()` | \ud83d\udd32 Next lesson |\n| `encrypt()` | \u26a0\ufe0f Phase 1 only |\n| `decrypt()` | \u26a0\ufe0f Phase 1 only |\n\n**Next Up**: Phase 2 \u2014 Transposition! You'll rearrange characters to confuse attackers who try frequency analysis."
+      }
+    }
+  ]
+}

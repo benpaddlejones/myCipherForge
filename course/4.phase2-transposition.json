@@ -1,0 +1,199 @@
+{
+  "id": "phase2-transposition",
+  "title": "Phase 2: Transposition — Scrambling Positions",
+  "description": "Add your second encryption layer! Learn how transposition rearranges characters to break patterns that substitution leaves behind.",
+  "sections": [
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Learning Objectives\n- Understand the difference between substitution (WHAT) and transposition (WHERE)\n- Implement `phase2_encrypt()` using block reversal\n- Implement `phase2_decrypt()` to restore original order\n- Update the master `encrypt()` and `decrypt()` functions\n- Test Phases 1+2 working together\n- Understand why combining layers multiplies security\n- Commit your Phase 2 implementation\n\n---\n\n## 🔀 Adding Your Second Layer\n\nIn Lesson 3, you built Phase 1: Substitution. It changes **WHAT** characters are.\n\nNow you'll add Phase 2: Transposition. It changes **WHERE** characters are.\n\nBy the end of this lesson, your algorithm will have **two layers** working together — making it significantly harder to crack!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Substitution vs Transposition\n\n### Phase 1: Substitution\n\n**Changes WHAT each character is** — the character's identity.\n\n```\nInput:  H E L L O\nOutput: M J Q Q T\n        (each letter replaced with a different one)\n```\n\nThe letters changed, but they're **still in the same positions**.\n\n### Phase 2: Transposition\n\n**Changes WHERE each character is** — the character's position.\n\n```\nInput:  H E L L O\nOutput: O L L E H\n        (reversed — same letters, different positions)\n```\n\nThe letters are the same, but they've been **rearranged**.\n\n### Combined: Substitution THEN Transposition\n\n```\nInput:      H E L L O\nPhase 1:    M J Q Q T     (substitution)\nPhase 2:    T Q Q J M     (transposition)\n```\n\nNow an attacker must figure out **both** the substitution AND the rearrangement!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Substitution vs Transposition",
+      "content": {
+        "question": "What's the difference between substitution and transposition?",
+        "options": [
+          "Substitution is faster, transposition is slower",
+          "Substitution changes what characters are; transposition changes where they are",
+          "Substitution works on letters; transposition works on numbers",
+          "They're the same thing with different names"
+        ],
+        "correct_index": 1,
+        "explanation": "Substitution changes the IDENTITY of characters (A becomes X). Transposition changes the POSITION of characters (ABC becomes CBA). They complement each other perfectly! Substitution hides what characters are, and transposition hides where they were originally located."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Why Phase 1 Alone Isn't Enough\n\nRemember the weaknesses from Lesson 3?\n\nPhase 1 (substitution) **preserves patterns**:\n\n| Pattern | Before Substitution | After Substitution |\n|---------|---------------------|-------------------|\n| Word lengths | `Hello World` | `Mjqqt!]twqi` |\n| Spaces | Visible between words | Still visible |\n| Double letters | `LL` in Hello | `QQ` in Mjqqt |\n| Letter frequency | 'E' is most common | Shifted 'E' is still most common |\n\n### How Transposition Helps\n\nTransposition **breaks these patterns**:\n\n```\nOriginal:     \"HELLO WORLD\"\nPhase 1:      \"MJQQT%]TWQI\"\nPhase 2:      \"IQW]%TQQJM\"   ← No more word boundaries!\n```\n\n- Words are scrambled together\n- Double letters (`QQ`) might get separated\n- Spaces move to unexpected positions"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Block Reversal: Our Transposition Technique\n\nWe'll use **block reversal** for Phase 2.\n\n### How It Works\n\n1. Split the text into blocks of `N` characters\n2. Reverse each block\n3. Join them back together\n\n### Example: Block Size = 4\n\n```\nInput:     \"HELLO WORLD!\"\n\nSplit:     [HELL] [O WO] [RLD!]\n\nReverse:   [LLEH] [OW O] [!DLR]\n\nOutput:    \"LLEHOW O!DLR\"\n```\n\n### Why Block Reversal?\n\n| Advantage | Explanation |\n|-----------|-------------|\n| **Simple** | Easy to understand and implement |\n| **Reversible** | Reverse twice = original! |\n| **Configurable** | Different block sizes = different outputs |\n| **Effective** | Scrambles positions well |"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Block Reversal",
+      "content": {
+        "question": "Using block reversal with block_size=3 on \"ABCDEF\", what is the result?",
+        "options": ["FEDCBA", "CBAFED", "DEFABC", "ABCDEF"],
+        "correct_index": 1,
+        "explanation": "Split into blocks of 3: [ABC] [DEF]. Reverse each block: [CBA] [FED]. Join: 'CBAFED'. Each block is reversed independently, not the entire string!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 1: Add Phase 2 Encrypt\n\nOpen `engine.py` in Codespaces.\n\n### Add This Function After phase1_decrypt\n\nType this new function:\n\n```python\ndef phase2_encrypt(text, key):\n    \"\"\"\n    Phase 2: Transposition — Rearrange character positions.\n    \n    Uses block reversal: split into blocks and reverse each one.\n    This layer changes WHERE each character is (its position).\n    \n    Args:\n        text: The string to transform (already Phase 1 encrypted)\n        key: Dictionary containing encryption settings\n        \n    Returns:\n        The transposed string with characters rearranged\n    \"\"\"\n    # Get block size from key (default to 4 if not specified)\n    block_size = key.get(\"block_size\", 4)\n    \n    result = \"\"\n    \n    # Process text in chunks of block_size\n    for i in range(0, len(text), block_size):\n        # Extract this block (might be shorter at the end)\n        block = text[i:i + block_size]\n        # Reverse the block and add to result\n        result += block[::-1]\n    \n    return result\n```\n\n### Understanding the Code\n\n| Line | What It Does |\n|------|--------------|\n| `block_size = key.get(\"block_size\", 4)` | Get block size from key, default 4 |\n| `range(0, len(text), block_size)` | Loop: 0, 4, 8, 12... |\n| `text[i:i + block_size]` | Extract characters from position i to i+block_size |\n| `block[::-1]` | Reverse the block (Python slice magic!) |\n\n### Save the File (Ctrl + S)"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 2: Add Phase 2 Decrypt\n\n### The Beautiful Truth About Block Reversal\n\nReversing a reversed block gives you the original!\n\n```python\noriginal = \"ABCD\"\nreversed_once = \"DCBA\"\nreversed_twice = \"ABCD\"  # Back to original!\n```\n\nThis means **decryption is identical to encryption** for block reversal!\n\n### Add This Function Below phase2_encrypt\n\n```python\ndef phase2_decrypt(text, key):\n    \"\"\"\n    Phase 2: Reverse the transposition.\n    \n    For block reversal, decryption is the same as encryption!\n    Reversing a reversed block returns the original.\n    \n    Args:\n        text: The transposed string\n        key: Dictionary containing the same encryption settings\n        \n    Returns:\n        The un-transposed string\n    \"\"\"\n    # Block reversal is self-inverting: encrypt == decrypt\n    # Reverse twice = original!\n    block_size = key.get(\"block_size\", 4)\n    \n    result = \"\"\n    for i in range(0, len(text), block_size):\n        block = text[i:i + block_size]\n        result += block[::-1]\n    \n    return result\n```\n\n### Save the File"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Self-Inverting Operations",
+      "content": {
+        "question": "Why can we use the same code for phase2_encrypt and phase2_decrypt?",
+        "options": [
+          "It's a shortcut that only works sometimes",
+          "Block reversal is self-inverting — doing it twice returns the original",
+          "Python automatically detects whether to encrypt or decrypt",
+          "The key dictionary tells it which mode to use"
+        ],
+        "correct_index": 1,
+        "explanation": "Block reversal is a 'self-inverse' operation: applying it twice returns the original. If you reverse 'ABCD' to get 'DCBA', then reverse 'DCBA', you get 'ABCD' again. This is NOT true for all transposition techniques (like columnar transposition), but it works perfectly for reversal!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 3: Test Phase 2 Alone\n\nBefore integrating, let's test Phase 2 by itself.\n\n### Open Python REPL\n\n```bash\npython\n```\n\n### Test Block Reversal\n\n```python\nfrom engine import phase2_encrypt, phase2_decrypt\n\n# Test with block size 4\nkey = {\"block_size\": 4}\n\noriginal = \"Hello World!\"\nprint(f\"Original: {original}\")\n\nencrypted = phase2_encrypt(original, key)\nprint(f\"Encrypted: {encrypted}\")\n\ndecrypted = phase2_decrypt(encrypted, key)\nprint(f\"Decrypted: {decrypted}\")\n\nprint(f\"Match: {decrypted == original}\")\n```\n\n### Expected Output\n\n```\nOriginal: Hello World!\nEncrypted: lleHoW o!dlr\nDecrypted: Hello World!\nMatch: True\n```\n\n### Try Different Block Sizes\n\n```python\n# Block size 2 - more scrambling\nkey2 = {\"block_size\": 2}\nphase2_encrypt(\"ABCDEFGH\", key2)  # \"BADCFEHG\"\n\n# Block size 6\nkey6 = {\"block_size\": 6}\nphase2_encrypt(\"ABCDEFGH\", key6)  # \"FEDCBAHG\"\n```\n\n### Exit Python\n\n```python\nexit()\n```"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Phase 2 Testing",
+      "content": {
+        "description": "Test phase2_encrypt and phase2_decrypt with three different block sizes (e.g., 2, 5, and 8). For each test, record: (1) the block size, (2) your test message, (3) the encrypted result, (4) whether decrypt returns the original.",
+        "example_answer": "Test 1: block_size=2, message='Python!', encrypted='yPhtno!', decrypt worked ✓\nTest 2: block_size=5, message='Encrypt this', encrypted='rcnEtpt ihsy', decrypt worked ✓\nTest 3: block_size=8, message='CipherForge 2026', encrypted='egreFrpiCh 6202', decrypt worked ✓\nAll tests passed! Block reversal is always reversible.",
+        "min_words": 30,
+        "max_words": 150
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 4: Update Master Encrypt Function\n\nNow let's integrate Phase 2 into the master encryption pipeline.\n\n### Find the encrypt() Function\n\nScroll down in `engine.py` to find your `encrypt()` function.\n\n### Update It\n\nChange it from:\n\n```python\ndef encrypt(text, key):\n    # Phase 1: Substitution\n    result = phase1_encrypt(text, key)\n    \n    # TODO: Phase 2 — Transposition\n    # result = phase2_encrypt(result, key)\n    ...\n```\n\nTo:\n\n```python\ndef encrypt(text, key):\n    \"\"\"\n    CipherForge Master Encryption — Applies all 5 phases.\n    \n    Currently implemented: Phases 1-2\n    Coming soon: Phases 3-5\n    \"\"\"\n    # Phase 1: Substitution — change WHAT characters are\n    result = phase1_encrypt(text, key)\n    \n    # Phase 2: Transposition — change WHERE characters are\n    result = phase2_encrypt(result, key)\n    \n    # TODO: Phase 3 — Key-Dependent\n    # result = phase3_encrypt(result, key)\n    \n    # TODO: Phase 4 — Noise Injection\n    # result = phase4_encrypt(result, key)\n    \n    # TODO: Phase 5 — Wild Card\n    # result = phase5_encrypt(result, key)\n    \n    return result\n```\n\n### Save the File"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 5: Update Master Decrypt Function\n\n### Critical: Reverse Order!\n\nEncryption applies phases: **1 → 2 → 3 → 4 → 5**\n\nDecryption must reverse: **5 → 4 → 3 → 2 → 1**\n\nSince we only have Phases 1-2, decrypt goes: **2 → 1**\n\n### Find the decrypt() Function\n\nScroll to your `decrypt()` function.\n\n### Update It\n\n```python\ndef decrypt(text, key):\n    \"\"\"\n    CipherForge Master Decryption — Reverses all 5 phases.\n    \n    CRITICAL: Phases must be reversed in OPPOSITE order!\n    Encrypt: 1 → 2 → 3 → 4 → 5\n    Decrypt: 5 → 4 → 3 → 2 → 1\n    \"\"\"\n    result = text\n    \n    # TODO: Phase 5 — Reverse Wild Card (first!)\n    # result = phase5_decrypt(result, key)\n    \n    # TODO: Phase 4 — Reverse Noise Injection\n    # result = phase4_decrypt(result, key)\n    \n    # TODO: Phase 3 — Reverse Key-Dependent\n    # result = phase3_decrypt(result, key)\n    \n    # Phase 2: Reverse Transposition\n    result = phase2_decrypt(result, key)\n    \n    # Phase 1: Reverse Substitution (last!)\n    result = phase1_decrypt(result, key)\n    \n    return result\n```\n\n### Save the File"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Decrypt Order",
+      "content": {
+        "question": "Why does phase2_decrypt come BEFORE phase1_decrypt in the decrypt function?",
+        "options": [
+          "Because Phase 2 is more important",
+          "Because Phase 2 was applied LAST during encryption, so it must be undone FIRST",
+          "Because the numbers should count down",
+          "It doesn't matter what order we use"
+        ],
+        "correct_index": 1,
+        "explanation": "Think of it like layers of wrapping on a gift. When encrypting, Phase 1 wraps first, then Phase 2 wraps over it. To decrypt (unwrap), we must remove Phase 2's wrap first before we can get to Phase 1's wrap. Last on, first off!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step 6: Test Combined Encryption\n\nNow let's test both phases working together!\n\n### Open Python REPL\n\n```bash\npython\n```\n\n### Test the Full Pipeline\n\n```python\nfrom engine import encrypt, decrypt, phase1_encrypt, phase2_encrypt\n\n# Key with settings for both phases\nkey = {\n    \"shift\": 7,        # Phase 1 setting\n    \"block_size\": 4    # Phase 2 setting\n}\n\nmessage = \"Secret Message!\"\n\n# See each phase\nprint(f\"Original:       {message}\")\n\nafter_phase1 = phase1_encrypt(message, key)\nprint(f\"After Phase 1:  {after_phase1}\")\n\nafter_phase2 = phase2_encrypt(after_phase1, key)\nprint(f\"After Phase 2:  {after_phase2}\")\n\n# Full encrypt/decrypt\nencrypted = encrypt(message, key)\ndecrypted = decrypt(encrypted, key)\n\nprint(f\"\\nFinal encrypted: {encrypted}\")\nprint(f\"Decrypted:       {decrypted}\")\nprint(f\"Match: {decrypted == message}\")\n```\n\n### Expected Output (similar to)\n\n```\nOriginal:       Secret Message!\nAfter Phase 1:  Zljyl{'Tlzzhnl(\nAfter Phase 2:  jlZy{lzTnhz(l\n\nFinal encrypted: jlZy{lzTnhz(l\nDecrypted:       Secret Message!\nMatch: True\n```\n\n### Exit Python\n\n```python\nexit()\n```"
+      }
+    },
+    {
+      "type": "python",
+      "title": "Phases 1+2 Combined",
+      "content": {
+        "description": "Write code that:\n1. Creates a key with shift=5 and block_size=3\n2. Encrypts 'CipherForge' with both phases\n3. Decrypts the result\n4. Prints 'SUCCESS' if decrypted matches original, 'FAILED' otherwise",
+        "starter_code": "# Phase functions (already implemented)\ndef phase1_encrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase1_decrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position - shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase2_encrypt(text, key):\n    block_size = key.get(\"block_size\", 4)\n    result = \"\"\n    for i in range(0, len(text), block_size):\n        block = text[i:i + block_size]\n        result += block[::-1]\n    return result\n\ndef phase2_decrypt(text, key):\n    return phase2_encrypt(text, key)  # Self-inverse!\n\ndef encrypt(text, key):\n    result = phase1_encrypt(text, key)\n    result = phase2_encrypt(result, key)\n    return result\n\ndef decrypt(text, key):\n    result = phase2_decrypt(text, key)\n    result = phase1_decrypt(result, key)\n    return result\n\n# YOUR TEST CODE HERE\nkey = # Create key with shift=5, block_size=3\nmessage = \"CipherForge\"\n\n# Encrypt, decrypt, and check\n",
+        "hints": [
+          "key = {\"shift\": 5, \"block_size\": 3}",
+          "Use encrypt(message, key) and decrypt(result, key)",
+          "Compare decrypted == message to determine success"
+        ],
+        "example_answer": "def phase1_encrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase1_decrypt(text, key):\n    shift = key.get(\"shift\", 5)\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position - shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef phase2_encrypt(text, key):\n    block_size = key.get(\"block_size\", 4)\n    result = \"\"\n    for i in range(0, len(text), block_size):\n        block = text[i:i + block_size]\n        result += block[::-1]\n    return result\n\ndef phase2_decrypt(text, key):\n    return phase2_encrypt(text, key)\n\ndef encrypt(text, key):\n    result = phase1_encrypt(text, key)\n    result = phase2_encrypt(result, key)\n    return result\n\ndef decrypt(text, key):\n    result = phase2_decrypt(text, key)\n    result = phase1_decrypt(result, key)\n    return result\n\nkey = {\"shift\": 5, \"block_size\": 3}\nmessage = \"CipherForge\"\n\nencrypted = encrypt(message, key)\ndecrypted = decrypt(encrypted, key)\n\nif decrypted == message:\n    print(\"SUCCESS\")\nelse:\n    print(\"FAILED\")",
+        "test_cases": [
+          {
+            "input": "",
+            "expected": "SUCCESS"
+          }
+        ],
+        "min_lines": 5,
+        "must_differ_from_starter": true
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## How Much Harder to Crack?\n\nLet's calculate how adding Phase 2 improves security.\n\n### Phase 1 Only\n\n| Metric | Value |\n|--------|---------|\n| Possible shift values | 95 |\n| Total combinations | 95 |\n| Time to brute force | < 1 second |\n\n### Phases 1 + 2\n\n| Metric | Value |\n|--------|---------|\n| Possible shift values | 95 |\n| Possible block sizes | ~20 (2-20 are reasonable) |\n| Total combinations | 95 × 20 = **1,900** |\n| Time to brute force | Still quick, but 20× harder! |\n\n### The Key Space Multiplies\n\nWhen you add layers, the possibilities **multiply**, not add:\n\n```\nPhase 1 alone:     95 combinations\nPhases 1+2:        95 × 20 = 1,900 combinations\nPhases 1+2+3:      95 × 20 × 1000s = millions!\n```\n\nEach new phase **exponentially** increases security!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Key Space",
+      "content": {
+        "question": "If Phase 1 has 95 options and Phase 2 has 20 options, how many total combinations must an attacker try?",
+        "options": [
+          "115 (95 + 20)",
+          "75 (95 - 20)",
+          "1,900 (95 × 20)",
+          "4.75 (95 ÷ 20)"
+        ],
+        "correct_index": 2,
+        "explanation": "The attacker must try every combination of Phase 1 AND Phase 2, so the numbers MULTIPLY. With 95 shift options and 20 block size options, there are 95 × 20 = 1,900 possible combinations. This is why layered encryption is so powerful — each layer multiplies the difficulty!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Commit Checkpoint!\n\nYou've completed Phase 2! Time to save your progress.\n\n### Commands\n\n```bash\ngit add .\ngit commit -m \"feature: implement Phase 2 transposition with block reversal\"\ngit push\n```\n\n### Verify on GitHub\n\n1. Refresh your repository page\n2. Click on `engine.py`\n3. You should see:\n   - `phase1_encrypt()` and `phase1_decrypt()`\n   - `phase2_encrypt()` and `phase2_decrypt()` ✨ NEW\n   - Updated `encrypt()` calling Phases 1 and 2\n   - Updated `decrypt()` calling Phases 2 then 1"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Current engine.py Structure\n\nYour file should now look like this:\n\n```python\n\"\"\"\nCipherForge — Encryption Engine\n================================\n... (header) ...\n\"\"\"\n\n# ==================== PHASE 1: SUBSTITUTION ====================\n\ndef phase1_encrypt(text, key):\n    # Shift each character by key[\"shift\"]\n    ...\n\ndef phase1_decrypt(text, key):\n    # Reverse: subtract the shift\n    ...\n\n# ==================== PHASE 2: TRANSPOSITION ====================\n\ndef phase2_encrypt(text, key):\n    # Block reversal with key[\"block_size\"]\n    ...\n\ndef phase2_decrypt(text, key):\n    # Same as encrypt (self-inverse)\n    ...\n\n# ==================== MASTER FUNCTIONS ====================\n\ndef encrypt(text, key):\n    result = phase1_encrypt(text, key)  # Phase 1\n    result = phase2_encrypt(result, key)  # Phase 2\n    # TODO: Phases 3-5\n    return result\n\ndef decrypt(text, key):\n    result = text\n    # TODO: Phases 5-3\n    result = phase2_decrypt(result, key)  # Phase 2 first!\n    result = phase1_decrypt(result, key)  # Phase 1 last!\n    return result\n```"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## ✅ Checklist: Before Moving On\n\n- [ ] Added `phase2_encrypt()` with block reversal\n- [ ] Added `phase2_decrypt()` (same code — self-inverse!)\n- [ ] Updated `encrypt()` to call Phase 1 then Phase 2\n- [ ] Updated `decrypt()` to call Phase 2 then Phase 1 (reverse order!)\n- [ ] Tested Phase 2 alone in REPL\n- [ ] Tested Phases 1+2 combined in REPL\n- [ ] Verified reversibility with multiple test messages\n- [ ] Committed with message: `feature: implement Phase 2 transposition with block reversal`\n- [ ] Pushed to GitHub\n\n> 🎯 **Phase 2 Complete!** You now have two layers working together. But we can still brute force 1,900 combinations pretty quickly. In the next lesson, Phase 3 will make encryption depend on a **password** — creating millions or billions of possibilities!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Summary\n\n| Topic | Key Points |\n|-------|------------|\n| **Substitution** | Changes WHAT characters are (identity) |\n| **Transposition** | Changes WHERE characters are (position) |\n| **Block Reversal** | Split into blocks, reverse each |\n| **Self-Inverse** | Reverse twice = original |\n| **Decrypt Order** | Reverse order of encryption phases |\n| **Key Space** | Layers MULTIPLY possibilities |\n\n---\n\n### Code Progress\n\n| Function | Status |\n|----------|--------|\n| `phase1_encrypt()` | ✅ Complete |\n| `phase1_decrypt()` | ✅ Complete |\n| `phase2_encrypt()` | ✅ Complete |\n| `phase2_decrypt()` | ✅ Complete |\n| `phase3_encrypt()` | 🔲 Next lesson |\n| `phase3_decrypt()` | 🔲 Next lesson |\n| `encrypt()` | ⚠️ Phases 1-2 |\n| `decrypt()` | ⚠️ Phases 1-2 |\n\n**Next Up**: Phase 3 — Key-Dependent Encryption! Your cipher will use a password to vary the shift at each position, creating exponentially more combinations."
+      }
+    }
+  ]
+}
