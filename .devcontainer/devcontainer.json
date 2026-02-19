@@ -7,9 +7,6 @@
   "hostRequirements": {
     "cpus": 4
   },
-  "hostRequirements": {
-    "cpus": 4
-  },
   "waitFor": "onCreateCommand",
   "updateContentCommand": "",
   "postCreateCommand": "pip install -r requirements.txt && apt-get clean && rm -rf /root/.cache/pip",

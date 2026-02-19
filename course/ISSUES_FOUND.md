@@ -11,20 +11,6 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
-## Major Issues
-
-### M1: Duplicate Key in devcontainer.json
-
-**Location:** `.devcontainer/devcontainer.json`
-
-**Issue:** The JSON file contains duplicate `hostRequirements` key entries, making it invalid JSON in strict parsers.
-
-**Impact:** Medium - May cause issues with some JSON parsers or IDEs.
-
-**Recommendation:** Remove the duplicate key, keeping only one `hostRequirements` section.
-
----
-
 ## Minor Issues
 
 ### m1: requirements.txt Contains Unexplained Packages
@@ -65,9 +51,8 @@ After following the CipherForge course instructions as a student would, the foll
 
 ## Recommendations for Course Improvement
 
-1. **Fix duplicate JSON keys** in devcontainer.json
-2. **Add inline comments** to requirements.txt explaining each package
-3. **Consider adding a "Common Issues" section** to each lesson for known stumbling blocks
+1. **Add inline comments** to requirements.txt explaining each package
+2. **Consider adding a "Common Issues" section** to each lesson for known stumbling blocks
 
 ---
 
