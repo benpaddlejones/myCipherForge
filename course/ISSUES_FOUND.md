@@ -107,16 +107,6 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
-### I2: Code Block Formatting in Lesson JSON
-
-**Location:** Multiple lesson JSON files
-
-**Issue:** Some code blocks in the JSON files have escaped newlines (`\n`) making them harder to read directly.
-
-**Resolution:** This is expected JSON formatting—use a JSON viewer or parser to read properly.
-
----
-
 ## Recommendations for Course Improvement
 
 1. **Fix duplicate JSON keys** in devcontainer.json
