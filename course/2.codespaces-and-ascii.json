@@ -1,0 +1,274 @@
+{
+  "id": "codespaces-and-ascii",
+  "title": "Codespaces, ASCII, and Your First Cipher",
+  "description": "Launch your development environment, create the encryption engine file, and learn how computers represent text as numbers \u2014 then write your first cipher!",
+  "sections": [
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Learning Objectives\n- Launch and navigate GitHub Codespaces\n- Create the `engine.py` file that will hold your encryption algorithm\n- Understand how ASCII encodes characters as numbers\n- Use Python's `ord()` and `chr()` functions to convert between characters and numbers\n- Write and test your first simple cipher in the Python REPL\n- Commit your progress to GitHub\n\n---\n\n## \ud83d\ude80 Time to Code!\n\nIn the last lesson, you set up your repository. Now we're going to:\n\n1. **Launch Codespaces** \u2014 your cloud development environment\n2. **Create your first file** \u2014 the encryption engine\n3. **Learn ASCII** \u2014 how computers see text as numbers\n4. **Build a cipher** \u2014 encrypt your first message!\n\nBy the end of this lesson, you'll have written working encryption code. Let's go!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## What is GitHub Codespaces?\n\n**GitHub Codespaces** is a cloud-based development environment. Instead of installing software on your computer, you write and run code in your web browser!\n\n### Why Codespaces?\n\n| Benefit | What It Means for You |\n|---------|----------------------|\n| \u2601\ufe0f **Cloud-based** | Works on any computer \u2014 school, home, library, phone |\n| \ud83d\udcbb **VS Code built-in** | Professional code editor right in your browser |\n| \ud83d\udd12 **Consistent** | Everyone gets the same setup \u2014 no \"works on my computer\" problems |\n| \ud83c\udd93 **Free for students** | 60 hours per month with GitHub Education |\n\n> \ud83d\udca1 **Key Point**: Your code is saved in your GitHub repository. Codespaces is just where you write and run it."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Step-by-Step: Launch Codespaces\n\n### Step 1: Open Your Repository\n\n1. Go to GitHub and navigate to your `2027CT.myCipherForge_{YourName}` repository\n2. You should see your README.md displayed on the main page\n\n### Step 2: Create a Codespace\n\n1. Click the green **\"Code\"** button (near the top-right)\n2. Switch to the **\"Codespaces\"** tab\n3. Click **\"Create codespace on main\"**\n\n> \u23f3 **Wait**: The first time takes 1-2 minutes. A new browser tab will open with VS Code.\n\n### Step 3: Explore the Interface\n\nOnce Codespaces loads, you'll see VS Code in your browser:\n\n| Area | What It Does |\n|------|--------------|\n| **Left Sidebar** | File explorer \u2014 see your project files |\n| **Main Area** | Code editor \u2014 where you write code |\n| **Bottom Panel** | Terminal \u2014 where you run commands |\n| **Top Bar** | File menu, settings |\n\n> \ud83d\udca1 **Tip**: If the terminal isn't visible, press `` Ctrl + ` `` (backtick key, usually above Tab) to toggle it."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Understanding Codespaces",
+      "content": {
+        "question": "What happens to your code when you close the Codespaces browser tab?",
+        "options": [
+          "Your code is deleted forever",
+          "Your code stays in your GitHub repository \u2014 you can reopen Codespaces anytime",
+          "Your code is saved only on your computer",
+          "You need to download a backup first"
+        ],
+        "correct_index": 1,
+        "explanation": "Your code lives in your GitHub repository, not in Codespaces itself. Codespaces is just a temporary workspace where you edit and run code. When you commit and push changes, they're saved to GitHub. You can close Codespaces and come back later \u2014 your code will still be there!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Creating Your Encryption Engine File\n\nNow let's create the file where you'll build your entire encryption algorithm.\n\n### Step 1: Create engine.py\n\n1. In the file explorer (left sidebar), right-click in the empty area\n2. Select **\"New File\"**\n3. Name it exactly: `engine.py`\n4. Press Enter\n\n### Step 2: Add the File Header\n\nType this into your new `engine.py` file:\n\n```python\n\"\"\"\nCipherForge \u2014 Encryption Engine\n================================\nAuthor: [Your Name]\nDate: 2026\n\nThis file contains my custom 5-layer encryption algorithm.\n\nPHASES:\n  1. Substitution \u2014 Replace characters with different ones\n  2. Transposition \u2014 Rearrange the order of characters  \n  3. Key-Dependent \u2014 Make output depend on a secret password\n  4. Noise Injection \u2014 Add fake characters to confuse attackers\n  5. Wild Card \u2014 My unique invention!\n\nRULES:\n  - encrypt() MUST be reversible\n  - decrypt(encrypt(message)) MUST return the original message\n\"\"\"\n\n# Your encryption code will go below this line!\n```\n\n### Step 3: Save the File\n\nPress `Ctrl + S` (or `Cmd + S` on Mac) to save.\n\n> \ud83d\udca1 **Notice**: A dot appears next to the filename when there are unsaved changes. The dot disappears after you save."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Setting Up Your Virtual Environment\n\nBefore we start coding, let's set up Python properly.\n\n### What is a Virtual Environment?\n\nA **virtual environment** is a separate \"bubble\" for your project's packages. This keeps your project isolated from other projects.\n\n### Step-by-Step: Create Virtual Environment\n\nIn the terminal at the bottom of Codespaces, type these commands **one at a time** and press Enter after each:\n\n```bash\n# Step 1: Create a virtual environment called 'venv'\npython -m venv venv\n\n# Step 2: Activate the virtual environment\nsource venv/bin/activate\n```\n\n> \u2705 **Success indicator**: You should see `(venv)` appear at the start of your terminal prompt:\n> ```\n> (venv) @username \u279c /workspaces/2027CT.myCipherForge_Ben.J $\n> ```\n\n### Install Flask (We'll Need It Later)\n\n```bash\npip install flask\n```\n\n> \u23f3 **Wait**: This takes 10-20 seconds. You'll see text scrolling \u2014 that's normal!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Virtual Environments",
+      "content": {
+        "question": "Why do we create a virtual environment for our CipherForge project?",
+        "options": [
+          "It makes the code run faster",
+          "It creates a virtual reality simulation",
+          "It isolates our project's packages so they don't conflict with other projects",
+          "It's required by GitHub Codespaces"
+        ],
+        "correct_index": 2,
+        "explanation": "A virtual environment creates an isolated 'bubble' for your project's packages. Different projects might need different versions of the same package \u2014 virtual environments prevent conflicts. It's a professional best practice!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Understanding ASCII: How Computers See Text\n\nBefore you can encrypt text, you need to understand **how computers store text as numbers**.\n\n### The Problem\n\nComputers only understand **numbers** \u2014 specifically binary (1s and 0s).\n\nBut we work with **letters**, **symbols**, and **punctuation**.\n\n**ASCII** (American Standard Code for Information Interchange) bridges this gap by assigning a number to every character.\n\n### The ASCII Table\n\n| Character | ASCII Code | Character | ASCII Code |\n|-----------|------------|-----------|------------|\n| `Space` | 32 | `A` | 65 |\n| `!` | 33 | `B` | 66 |\n| `0` | 48 | `Z` | 90 |\n| `9` | 57 | `a` | 97 |\n| `@` | 64 | `z` | 122 |\n\n### Key Ranges to Remember\n\n| Range | Characters |\n|-------|------------|\n| **32-47** | Space and punctuation (`!\"#$%&'()*+,-./`) |\n| **48-57** | Digits (`0123456789`) |\n| **65-90** | Uppercase letters (`A-Z`) |\n| **97-122** | Lowercase letters (`a-z`) |\n| **32-126** | All printable characters (we'll use this range!) |"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Python Functions: ord() and chr()\n\nPython gives us two functions to convert between characters and ASCII codes:\n\n### ord() \u2014 Character to Number\n\n```python\nord('A')    # Returns: 65\nord('Z')    # Returns: 90\nord('a')    # Returns: 97\nord(' ')    # Returns: 32 (space)\nord('!')    # Returns: 33\n```\n\n### chr() \u2014 Number to Character\n\n```python\nchr(65)     # Returns: 'A'\nchr(90)     # Returns: 'Z'\nchr(97)     # Returns: 'a'\nchr(32)     # Returns: ' ' (space)\nchr(33)     # Returns: '!'\n```\n\n### They're Inverses!\n\n`ord()` and `chr()` **undo each other**:\n\n```python\nchr(ord('X'))  # Returns: 'X'  (char \u2192 num \u2192 char)\nord(chr(88))   # Returns: 88   (num \u2192 char \u2192 num)\n```\n\n> \ud83d\udca1 **Why This Matters**: To encrypt, we convert characters to numbers, do math on the numbers, then convert back to characters!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \ud83e\uddea Try It Yourself: Python REPL\n\nLet's experiment with `ord()` and `chr()` in the Python REPL (Read-Eval-Print Loop).\n\n### Step 1: Open Python REPL\n\nIn the terminal, type:\n\n```bash\npython\n```\n\nYou'll see:\n```\nPython 3.x.x ...\n>>> \n```\n\nThe `>>>` means Python is waiting for your commands.\n\n### Step 2: Try These Commands\n\nType each line and press Enter. Observe what Python returns:\n\n```python\nord('A')\nord('B')\nord('Z')\nchr(65)\nchr(66)\nchr(90)\nord('a') - ord('A')\n```\n\n### Step 3: Discover the Pattern\n\nNotice: `ord('a') - ord('A')` equals **32**. This is the gap between uppercase and lowercase!\n\n### Step 4: Exit Python REPL\n\nType `exit()` or press `Ctrl + D` to return to the normal terminal."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "ASCII Practice",
+      "content": {
+        "question": "What does `chr(ord('M') + 5)` return?",
+        "options": [
+          "'M5'",
+          "'R'",
+          "82",
+          "'m'"
+        ],
+        "correct_index": 1,
+        "explanation": "Let's trace it: ord('M') = 77. Then 77 + 5 = 82. Finally chr(82) = 'R'. So 'M' shifted by 5 positions becomes 'R'. This is exactly how a Caesar cipher works!"
+      }
+    },
+    {
+      "type": "python",
+      "title": "ASCII Exploration",
+      "content": {
+        "description": "Write code that:\n1. Gets the ASCII code of 'H'\n2. Adds 7 to that code\n3. Converts the result back to a character\n4. Prints the result\n\nThis is your first encryption \u2014 shifting 'H' by 7 positions!",
+        "starter_code": "# Step 1: Get the ASCII code of 'H'\noriginal_code = ord('H')\nprint(f\"ASCII code of 'H': {original_code}\")\n\n# Step 2: Add 7 to the code\nshifted_code = # YOUR CODE HERE\n\n# Step 3: Convert back to a character\nresult = # YOUR CODE HERE\n\n# Step 4: Print the result\nprint(f\"'H' shifted by 7 becomes: {result}\")",
+        "hints": [
+          "For Step 2: shifted_code = original_code + 7",
+          "For Step 3: Use chr() to convert a number back to a character",
+          "The result should be 'O' (H + 7 positions in the alphabet)"
+        ],
+        "example_answer": "# Step 1: Get the ASCII code of 'H'\noriginal_code = ord('H')\nprint(f\"ASCII code of 'H': {original_code}\")\n\n# Step 2: Add 7 to the code\nshifted_code = original_code + 7\n\n# Step 3: Convert back to a character\nresult = chr(shifted_code)\n\n# Step 4: Print the result\nprint(f\"'H' shifted by 7 becomes: {result}\")",
+        "test_cases": [
+          {
+            "input": "",
+            "expected": "contains: O"
+          }
+        ],
+        "min_lines": 4,
+        "must_differ_from_starter": true
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## The Problem: What Happens at 'Z'?\n\nTry this in your head: What's `'Z' + 5`?\n\n```python\nord('Z')        # 90\nord('Z') + 5    # 95\nchr(95)         # '_' (underscore \u2014 not a letter!)\n```\n\n**Problem**: If we shift 'Z' by 5, we get an underscore, not a letter!\n\n### The Solution: Modular Arithmetic (Wrapping)\n\nWe need the alphabet to \"wrap around\" \u2014 after Z comes A again.\n\nThis is like a clock: after 12 comes 1, not 13.\n\n### The Formula\n\nFor printable ASCII (characters 32-126, which is 95 characters total):\n\n```python\n# Shift a character by 'shift' positions, wrapping around\nposition = ord(char) - 32          # Convert to 0-94 range\nnew_position = (position + shift) % 95  # Add shift, wrap with modulo\nresult = chr(new_position + 32)    # Convert back to ASCII\n```\n\n### What Does `% 95` Do?\n\n`%` is the **modulo operator** \u2014 it gives the remainder after division.\n\n```python\n97 % 95   # = 2  (97 \u00f7 95 = 1 remainder 2)\n100 % 95  # = 5  (100 \u00f7 95 = 1 remainder 5)\n94 % 95   # = 94 (stays the same, no wrap needed)\n```\n\nThis makes values \"wrap around\" when they exceed 94!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Modular Arithmetic",
+      "content": {
+        "question": "If position = 92 and shift = 5, what is (position + shift) % 95?",
+        "options": [
+          "97",
+          "2",
+          "92",
+          "5"
+        ],
+        "correct_index": 1,
+        "explanation": "92 + 5 = 97. Then 97 % 95 = 2 (because 97 = 1\u00d795 + 2). The modulo operator makes the value 'wrap around' \u2014 instead of going past the end (95+), it wraps back to the beginning (2). This is exactly what we need for our cipher!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## What Are Docstrings?\n\nBefore we write our first function, let's learn about **docstrings** \u2014 a Python best practice you'll use throughout this project.\n\n### The Problem\n\nImagine coming back to your code 6 months later. You see:\n\n```python\ndef f(t, s):\n    r = \"\"\n    for c in t:\n        r += chr((ord(c) - 32 + s) % 95 + 32)\n    return r\n```\n\nWhat does this function do? What are `t` and `s`? What does it return? \ud83e\udd37\n\n### The Solution: Docstrings\n\nA **docstring** is a special string at the start of a function that documents:\n- What the function does\n- What parameters it takes\n- What it returns\n\n```python\ndef encrypt_message(text, shift):\n    \"\"\"\n    Shift every character in the text by a given amount.\n    \n    Args:\n        text: The message to encrypt (string)\n        shift: How many positions to move each character (int)\n    \n    Returns:\n        The encrypted message (string)\n    \"\"\"\n    # code here...\n```\n\n### Why Docstrings Matter\n\n| Benefit | Explanation |\n|---------|-------------|\n| \ud83d\udcd6 **Self-documenting** | Your code explains itself |\n| \ud83d\udc65 **Team-friendly** | Others (and future you!) understand your code |\n| \ud83d\udd27 **IDE support** | VS Code shows docstrings when you hover over functions |\n| \u2705 **Professional** | Real software always has documentation |\n\n### Docstring Format\n\nWe use the **Google style** docstring format:\n\n```python\ndef function_name(param1, param2):\n    \"\"\"\n    Brief description of what the function does.\n    \n    Args:\n        param1: Description of first parameter\n        param2: Description of second parameter\n    \n    Returns:\n        Description of what is returned\n    \"\"\"\n```\n\n> \ud83d\udca1 **Rule**: Every function you write in CipherForge should have a docstring! This is a professional habit that will help you throughout your career."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Docstring Purpose",
+      "content": {
+        "question": "What is the main purpose of a docstring in Python?",
+        "options": [
+          "To make the code run faster",
+          "To document what a function does, its parameters, and return value",
+          "To encrypt the function's code",
+          "To create a backup of the function"
+        ],
+        "correct_index": 1,
+        "explanation": "Docstrings document your code \u2014 they explain what a function does, what parameters it takes, and what it returns. This makes your code easier to understand for others (including your future self!). IDEs like VS Code also use docstrings to show helpful information when you hover over function names."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Your First Cipher Function!\n\nLet's write a real encryption function. Add this to your `engine.py` file:\n\n```python\ndef simple_shift(text, shift):\n    \"\"\"\n    Shift every character by 'shift' positions.\n    \n    This is a simple Caesar cipher that works on ALL printable characters,\n    not just letters. It wraps around using modular arithmetic.\n    \n    Args:\n        text: The string to encrypt\n        shift: How many positions to shift (positive = forward)\n    \n    Returns:\n        The encrypted string\n    \"\"\"\n    result = \"\"\n    \n    for char in text:\n        if 32 <= ord(char) <= 126:  # Printable ASCII range\n            # Convert to 0-94 range\n            position = ord(char) - 32\n            # Shift and wrap\n            new_position = (position + shift) % 95\n            # Convert back to character\n            result += chr(new_position + 32)\n        else:\n            # Keep non-printable characters unchanged\n            result += char\n    \n    return result\n```\n\n### Save the file (Ctrl + S)!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Test Your Cipher!\n\nNow let's test it in the Python REPL.\n\n### Step 1: Open Python and Import Your Function\n\nIn the terminal:\n\n```bash\npython\n```\n\nThen:\n\n```python\nfrom engine import simple_shift\n```\n\n### Step 2: Encrypt a Message\n\n```python\nmessage = \"Hello World!\"\nencrypted = simple_shift(message, 7)\nprint(encrypted)\n```\n\nYou should see something like: `Olssv'~vysk(`\n\n### Step 3: Decrypt It Back!\n\nTo decrypt, we shift in the **opposite direction** (negative shift):\n\n```python\ndecrypted = simple_shift(encrypted, -7)\nprint(decrypted)\n```\n\nYou should see: `Hello World!`\n\n\ud83c\udf89 **It works!** You just encrypted and decrypted your first message!\n\n### Step 4: Try Different Messages\n\n```python\nsimple_shift(\"Secret123!\", 10)\nsimple_shift(\"CipherForge 2026\", 3)\n```\n\n### Step 5: Exit Python\n\n```python\nexit()\n```"
+      }
+    },
+    {
+      "type": "written_response",
+      "title": "Test Your Cipher",
+      "content": {
+        "description": "Using the Python REPL, encrypt your own message with a shift of your choice. Write down: (1) your original message, (2) the shift value you used, (3) the encrypted result, (4) confirmation that decrypting it gives back the original.",
+        "example_answer": "Original message: 'My secret code'\nShift value: 13\nEncrypted: 'Zl-rpnery-pbqr'\nDecryption test: simple_shift('Zl-rpnery-pbqr', -13) returned 'My secret code' \u2713\nIt works! The encryption is reversible.",
+        "min_words": 25,
+        "max_words": 100
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Add a Decrypt Function\n\nRight now, we're using `-7` to decrypt. Let's make a proper decrypt function.\n\nAdd this below your `simple_shift` function in `engine.py`:\n\n```python\ndef simple_unshift(text, shift):\n    \"\"\"\n    Reverse the simple_shift encryption.\n    \n    Decryption is just shifting in the opposite direction!\n    \n    Args:\n        text: The encrypted string\n        shift: The same shift value used for encryption\n    \n    Returns:\n        The decrypted (original) string\n    \"\"\"\n    # Decryption = shifting backwards (negative)\n    return simple_shift(text, -shift)\n```\n\n### Why This Works\n\nIf encryption shifts forward by 7, decryption shifts backward by 7.\n\n```\nEncrypt: H \u2192 O  (shift +7)\nDecrypt: O \u2192 H  (shift -7)\n```\n\nThis is why encryption **must be reversible** \u2014 we need to be able to undo it!"
+      }
+    },
+    {
+      "type": "python",
+      "title": "Reversibility Test",
+      "content": {
+        "description": "Write code that:\n1. Defines a test message\n2. Encrypts it with shift 11\n3. Decrypts the result with shift 11\n4. Checks if decrypted equals the original\n5. Prints 'PASS' if they match, 'FAIL' if they don't",
+        "starter_code": "# Import your functions (pretend they're already imported)\n# from engine import simple_shift, simple_unshift\n\n# For this exercise, we'll define them inline\ndef simple_shift(text, shift):\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef simple_unshift(text, shift):\n    return simple_shift(text, -shift)\n\n# YOUR TEST CODE HERE\nmessage = \"Testing 123!\"\nshift = 11\n\n# Step 1: Encrypt\nencrypted = # YOUR CODE\n\n# Step 2: Decrypt\ndecrypted = # YOUR CODE\n\n# Step 3: Check if they match\nif decrypted == message:\n    print(\"PASS - Encryption is reversible!\")\nelse:\n    print(f\"FAIL - Got '{decrypted}' instead of '{message}'\")",
+        "hints": [
+          "Use simple_shift(message, shift) to encrypt",
+          "Use simple_unshift(encrypted, shift) to decrypt",
+          "The decrypted result should exactly match the original message"
+        ],
+        "example_answer": "def simple_shift(text, shift):\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef simple_unshift(text, shift):\n    return simple_shift(text, -shift)\n\nmessage = \"Testing 123!\"\nshift = 11\n\nencrypted = simple_shift(message, shift)\ndecrypted = simple_unshift(encrypted, shift)\n\nif decrypted == message:\n    print(\"PASS - Encryption is reversible!\")\nelse:\n    print(f\"FAIL - Got '{decrypted}' instead of '{message}'\")",
+        "test_cases": [
+          {
+            "input": "",
+            "expected": "contains: PASS"
+          }
+        ],
+        "min_lines": 5,
+        "must_differ_from_starter": true
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Commit Your Progress!\n\nYou've written your first cipher. Time to save it to GitHub.\n\n### Step-by-Step: Commit and Push\n\nIn the terminal (make sure you've exited Python first):\n\n```bash\n# Stage all changed files\ngit add .\n\n# Commit with a descriptive message\ngit commit -m \"feature: add simple_shift and simple_unshift functions\"\n\n# Push to GitHub\ngit push\n```\n\n### Verify Your Commit\n\n1. Go to your repository on GitHub (refresh the page)\n2. You should see `engine.py` in the file list\n3. Click on it to verify your code is there\n4. Check the commit history \u2014 you should see your commit message\n\n> \ud83d\udca1 **Pro Tip**: Commit often! Every time you get something working, commit it. This creates checkpoints you can return to if something breaks."
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Commit Message",
+      "content": {
+        "question": "What commit type should you use when adding a new function to your code?",
+        "options": [
+          "fix: because you're fixing the empty file",
+          "feature: because you're adding new functionality",
+          "docs: because you wrote docstrings",
+          "test: because you tested it in the REPL"
+        ],
+        "correct_index": 1,
+        "explanation": "When you add new functionality (like a new function), use 'feature:'. Use 'fix:' for bug fixes, 'docs:' for documentation changes, and 'test:' for adding automated tests. The simple_shift function is new functionality, so 'feature:' is correct."
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Why Is This Cipher Weak?\n\nYour `simple_shift` cipher works, but it has a **fatal weakness**.\n\n### The Problem: Only 95 Possible Keys!\n\nThere are only 95 printable ASCII characters, so there are only 95 possible shift values (0-94).\n\nAn attacker can try ALL of them in seconds:\n\n```python\nciphertext = \"Olssv'~vysk(\"\n\nfor shift in range(95):\n    attempt = simple_shift(ciphertext, -shift)\n    print(f\"Shift {shift}: {attempt}\")\n```\n\nSomewhere in that list, they'll see `\"Hello World!\"` \u2014 your secret is cracked!\n\n### This is Called a Brute Force Attack\n\n**Brute force** = try every possible key until one works.\n\nWith only 95 keys, brute force takes less than a second.\n\n### The Solution: Multiple Layers!\n\nThis is exactly why you'll build **5 phases** of encryption:\n\n| Phase | What It Adds |\n|-------|-------------|\n| 1. Substitution | Changes what characters are |\n| 2. Transposition | Changes where characters are |\n| 3. Key-Dependent | Makes cracking require knowing the password |\n| 4. Noise | Adds fake data to confuse analysis |\n| 5. Wild Card | Your secret weapon! |\n\nEach layer multiplies the difficulty. Instead of 95 attempts, an attacker might need **billions**!"
+      }
+    },
+    {
+      "type": "mcq",
+      "title": "Security Weakness",
+      "content": {
+        "question": "Why is simple_shift easy to crack even though it uses math and wrapping?",
+        "options": [
+          "The code has a bug that shows the key",
+          "95 possible shifts can be tried very quickly (brute force)",
+          "Modular arithmetic is easy to reverse",
+          "Python is a slow programming language"
+        ],
+        "correct_index": 1,
+        "explanation": "With only 95 possible shift values, an attacker can try all of them in a fraction of a second. This is a brute force attack. The math works correctly \u2014 the problem is the tiny 'key space' (number of possible keys). Real encryption needs key spaces in the billions or trillions!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Current Project Structure\n\nYour project should now look like this:\n\n```\n2027CT.myCipherForge_YourName/\n\u251c\u2500\u2500 .devcontainer/        # Codespaces configuration\n\u251c\u2500\u2500 .github/\n\u2502   \u2514\u2500\u2500 copilot-instructions.md\n\u251c\u2500\u2500 venv/                 # Virtual environment (created)\n\u251c\u2500\u2500 .gitignore\n\u251c\u2500\u2500 .vscode/\n\u251c\u2500\u2500 engine.py             # YOUR CODE IS HERE! \u2b50\n\u251c\u2500\u2500 LICENSE\n\u251c\u2500\u2500 README.md\n\u2514\u2500\u2500 requirements.txt\n```\n\n### What's in engine.py Now\n\n```python\n# File header with description\n# simple_shift() function\n# simple_unshift() function\n```\n\nThis is the foundation. In the next lesson, you'll add Phase 1's **real** substitution cipher!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## \u2705 Checklist: Before Moving On\n\nMake sure you've completed these tasks:\n\n- [ ] Launched GitHub Codespaces from your repository\n- [ ] Created and activated a virtual environment (`venv`)\n- [ ] Installed Flask with `pip install flask`\n- [ ] Created `engine.py` with the file header\n- [ ] Added `simple_shift()` function\n- [ ] Added `simple_unshift()` function\n- [ ] Tested encryption/decryption in the Python REPL\n- [ ] Verified reversibility (decrypt returns original message)\n- [ ] Committed with message: `feature: add simple_shift and simple_unshift functions`\n- [ ] Pushed to GitHub and verified the commit\n\n> \ud83d\udc4d **Excellent work!** You've written working encryption code. In the next lesson, we'll build Phase 1 \u2014 a proper substitution cipher that will become the first layer of your CipherForge algorithm!"
+      }
+    },
+    {
+      "type": "markdown",
+      "content": {
+        "text": "## Summary\n\n| Topic | Key Points |\n|-------|------------|\n| **Codespaces** | Cloud-based VS Code \u2014 no installation needed |\n| **ASCII** | Characters are stored as numbers (32-126 for printable) |\n| **ord() / chr()** | Convert between characters and ASCII codes |\n| **Modular Arithmetic** | `% 95` makes values wrap around |\n| **simple_shift()** | Your first cipher \u2014 shifts all characters |\n| **Reversibility** | `decrypt(encrypt(x)) == x` \u2014 the golden rule! |\n| **Weakness** | Only 95 possible keys \u2014 easily brute-forced |\n\n---\n\n### Code You Wrote Today\n\n```python\ndef simple_shift(text, shift):\n    result = \"\"\n    for char in text:\n        if 32 <= ord(char) <= 126:\n            position = ord(char) - 32\n            new_position = (position + shift) % 95\n            result += chr(new_position + 32)\n        else:\n            result += char\n    return result\n\ndef simple_unshift(text, shift):\n    return simple_shift(text, -shift)\n```\n\n**Next Up**: Phase 1 \u2014 building a real substitution cipher that will become part of your final 5-layer algorithm!"
+      }
+    }
+  ]
+}
