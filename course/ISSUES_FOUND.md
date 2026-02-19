@@ -59,19 +59,7 @@ After following the CipherForge course instructions as a student would, the foll
 
 ## Minor Issues
 
-### m1: README is Generic Template
-
-**Location:** `README.md` (template repository version)
-
-**Issue:** The initial README.md is a generic template that doesn't provide project-specific setup instructions.
-
-**Impact:** Low - Students update this in Lesson 1, but initial clone is confusing.
-
-**Recommendation:** Provide more specific placeholder content or instructions.
-
----
-
-### m2: requirements.txt Contains Unexplained Packages
+### m1: requirements.txt Contains Unexplained Packages
 
 **Location:** `requirements.txt`
 
@@ -83,7 +71,7 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
-### m3: Card Text Not Visible in Web Interface
+### m2: Card Text Not Visible in Web Interface
 
 **Location:** `templates/base.html` and `templates/index.html`
 
