@@ -11,32 +11,6 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
-## Critical Issues
-
-### C1: CP-instructions.md Describes Wrong Project
-
-**Location:** `course/CP-instructions.md`
-
-**Issue:** The Copilot instructions file describes a completely different project (ChatterBot AI chatbot) instead of CipherForge encryption. This would cause AI assistants to provide irrelevant guidance.
-
-**Impact:** High - Students using GitHub Copilot or similar AI tools would receive guidance for the wrong project.
-
-**Recommendation:** Replace CP-instructions.md with CipherForge-specific instructions (see new `.github/copilot-instructions.md` created as part of this review).
-
----
-
-### C2: No Copilot Instructions for CipherForge
-
-**Location:** Missing `.github/copilot-instructions.md`
-
-**Issue:** There is no copilot-instructions.md file specific to the CipherForge project in the expected location.
-
-**Impact:** High - AI coding assistants have no project context.
-
-**Recommendation:** Create `.github/copilot-instructions.md` with CipherForge-specific guidance.
-
----
-
 ## Major Issues
 
 ### M1: Duplicate Key in devcontainer.json
@@ -145,12 +119,10 @@ After following the CipherForge course instructions as a student would, the foll
 
 ## Recommendations for Course Improvement
 
-1. **Replace CP-instructions.md** with CipherForge-specific content
-2. **Create .github/copilot-instructions.md** for proper AI assistant context
-3. **Fix duplicate JSON keys** in devcontainer.json
-4. **Review Copilot settings** in .vscode/settings.json
-5. **Add inline comments** to requirements.txt explaining each package
-6. **Consider adding a "Common Issues" section** to each lesson for known stumbling blocks
+1. **Fix duplicate JSON keys** in devcontainer.json
+2. **Review Copilot settings** in .vscode/settings.json
+3. **Add inline comments** to requirements.txt explaining each package
+4. **Consider adding a "Common Issues" section** to each lesson for known stumbling blocks
 
 ---
 
