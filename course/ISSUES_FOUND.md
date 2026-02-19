@@ -25,26 +25,6 @@ After following the CipherForge course instructions as a student would, the foll
 
 ---
 
-### M2: Copilot Disabled in VS Code Settings
-
-**Location:** `.vscode/settings.json`
-
-**Issue:** GitHub Copilot is explicitly disabled for Python, HTML, and CSS files:
-
-```json
-"github.copilot.enable": {
-    "python": false,
-    "html": false,
-    "css": false
-}
-```
-
-**Impact:** Medium - Contradicts using AI assistance as part of the learning activity.
-
-**Recommendation:** Either enable Copilot for these languages or document why it's intentionally disabled.
-
----
-
 ## Minor Issues
 
 ### m1: requirements.txt Contains Unexplained Packages
@@ -86,9 +66,8 @@ After following the CipherForge course instructions as a student would, the foll
 ## Recommendations for Course Improvement
 
 1. **Fix duplicate JSON keys** in devcontainer.json
-2. **Review Copilot settings** in .vscode/settings.json
-3. **Add inline comments** to requirements.txt explaining each package
-4. **Consider adding a "Common Issues" section** to each lesson for known stumbling blocks
+2. **Add inline comments** to requirements.txt explaining each package
+3. **Consider adding a "Common Issues" section** to each lesson for known stumbling blocks
 
 ---
 
