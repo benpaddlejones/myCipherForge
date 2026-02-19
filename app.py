@@ -3,10 +3,31 @@
 Provides a web interface for the 5-phase encryption algorithm.
 """
 
-from flask import Flask, render_template, request
+import os
+from functools import wraps
+from flask import Flask, render_template, request, session, redirect, url_for
 from engine import encrypt, decrypt
 
 app = Flask(__name__)
+app.secret_key = os.urandom(24)  # Required for sessions
+
+# Store users (in real apps, use a database with hashed passwords!)
+# SECURITY NOTE: Never store plain text passwords in production.
+# Use werkzeug.security.generate_password_hash() to hash passwords.
+USERS = {
+    "admin": "supersecret",
+    "student": "password123"
+}
+
+
+def login_required(f):
+    """Decorator that ensures user is logged in."""
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if not session.get('logged_in'):
+            return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 @app.route("/")
@@ -15,7 +36,32 @@ def index():
     return render_template("index.html")
 
 
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Handle login form."""
+    if request.method == 'POST':
+        username = request.form.get('username', '')
+        password = request.form.get('password', '')
+        
+        if username in USERS and USERS[username] == password:
+            session['logged_in'] = True
+            session['username'] = username
+            return redirect(url_for('workshop'))
+        else:
+            return render_template('login.html', error="Invalid credentials")
+    
+    return render_template('login.html')
+
+
+@app.route('/logout')
+def logout():
+    """Log out the current user."""
+    session.clear()
+    return redirect(url_for('index'))
+
+
 @app.route("/workshop", methods=["GET", "POST"])
+@login_required
 def workshop():
     """Handle encryption and decryption requests."""
     result = ""
